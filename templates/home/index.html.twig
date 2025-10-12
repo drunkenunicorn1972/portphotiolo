@@ -18,9 +18,9 @@
                     <div class="carousel-item {% if loop.first %}active{% endif %}">
                         <picture>
                             <source media="(max-width: 768px)"
-                                    srcset="{{ asset('uploads/photos/' ~ photo.filenameTablet ?? photo.filename) }}">
+                                    srcset="{{ asset('uploads/photos/' ~ (photo.filenameTablet ?? photo.filename)) }}">
                             <source media="(max-width: 1920px)"
-                                    srcset="{{ asset('uploads/photos/' ~ photo.filenameDesktop ?? photo.filename) }}">
+                                    srcset="{{ asset('uploads/photos/' ~ (photo.filenameDesktop ?? photo.filename)) }}">
                             <img src="{{ asset('uploads/photos/' ~ photo.filename) }}"
                                  alt="{{ photo.name }}"
                                  loading="lazy">
