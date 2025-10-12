@@ -1,0 +1,147 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ photo.name }} - Photo Portfolio{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <div class="photo-detail">
+            {# Breadcrumb #}
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Home</a></li>
+                    {% if photo.albums|length > 0 %}
+                        <li class="breadcrumb-item">
+                            <a href="{{ path('app_album_view', {id: photo.albums.first.id}) }}">
+                                {{ photo.albums.first.name }}
+                            </a>
+                        </li>
+                    {% endif %}
+                    <li class="breadcrumb-item active">{{ photo.name }}</li>
+                </ol>
+            </nav>
+
+            {# Main Photo #}
+            <div class="text-center mb-4">
+                <picture>
+                    <source media="(max-width: 768px)"
+                            srcset="{{ asset('uploads/photos/' ~ (photo.filenameTablet ?? photo.filename)) }}">
+                    <source media="(max-width: 1920px)"
+                            srcset="{{ asset('uploads/photos/' ~ (photo.filenameDesktop ?? photo.filename)) }}">
+                    <img src="{{ asset('uploads/photos/' ~ photo.filename) }}"
+                         alt="{{ photo.name }}"
+                         class="img-fluid">
+                </picture>
+            </div>
+
+            {# Photo Information #}
+            <div class="photo-meta">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h2>{{ photo.name }}</h2>
+
+                        {% if photo.description %}
+                            <p class="lead">{{ photo.description }}</p>
+                        {% endif %}
+
+                        {# Tags #}
+                        {% if photo.tags|length > 0 %}
+                            <div class="mb-3">
+                                <strong><i class="fas fa-tags"></i> Tags:</strong><br>
+                                {% for tag in photo.tags %}
+                                    <span class="badge bg-success badge-tag">{{ tag.name }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        {# Albums #}
+                        {% if photo.albums|length > 0 %}
+                            <div class="mb-3">
+                                <strong><i class="fas fa-images"></i> Albums:</strong><br>
+                                {% for album in photo.albums %}
+                                    <a href="{{ path('app_album_view', {id: album.id}) }}"
+                                       class="badge bg-primary badge-tag text-decoration-none">
+                                        {{ album.name }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        {# Stats #}
+                        <div class="d-flex gap-3">
+                            <span class="badge bg-info">
+                                <i class="fas fa-eye"></i> {{ photo.viewCount }} Views
+                            </span>
+                            <span class="badge bg-danger">
+                                <i class="fas fa-heart"></i> {{ photo.likeCount }} Likes
+                            </span>
+                            {% if photo.rating %}
+                                <span class="badge bg-warning">
+                                    <i class="fas fa-star"></i> {{ photo.rating }}/5
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {# EXIF Data #}
+                    <div class="col-md-4">
+                        <h5><i class="fas fa-camera"></i> Photo Details</h5>
+                        <table class="table table-sm">
+                            {% if photo.device %}
+                                <tr>
+                                    <td><strong>Camera:</strong></td>
+                                    <td>{{ photo.device }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if photo.createdAt %}
+                                <tr>
+                                    <td><strong>Date Taken:</strong></td>
+                                    <td>{{ photo.createdAt|date('F j, Y') }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if photo.aperture %}
+                                <tr>
+                                    <td><strong>Aperture:</strong></td>
+                                    <td>f/{{ photo.aperture }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if photo.focalLength %}
+                                <tr>
+                                    <td><strong>Focal Length:</strong></td>
+                                    <td>{{ photo.focalLength }}mm</td>
+                                </tr>
+                            {% endif %}
+                            {% if photo.exposureTime %}
+                                <tr>
+                                    <td><strong>Shutter Speed:</strong></td>
+                                    <td>{{ photo.exposureTime }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if photo.iso %}
+                                <tr>
+                                    <td><strong>ISO:</strong></td>
+                                    <td>{{ photo.iso }}</td>
+                                </tr>
+                            {% endif %}
+                            <tr>
+                                <td><strong>Flash:</strong></td>
+                                <td>{{ photo.flash ? 'Yes' : 'No' }}</td>
+                            </tr>
+                            {% if photo.location %}
+                                <tr>
+                                    <td><strong>Location:</strong></td>
+                                    <td>{{ photo.location }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if photo.copyright %}
+                                <tr>
+                                    <td><strong>Copyright:</strong></td>
+                                    <td>{{ photo.copyright }}</td>
+                                </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

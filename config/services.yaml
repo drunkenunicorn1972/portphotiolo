@@ -23,3 +23,8 @@ services:
            $aiApiUrl: '%env(AI_API_URL)%'
            $aiApiKey: '%env(AI_API_KEY)%'
            $publicUrl: '%env(PUBLIC_URL)%'
+
+    App\Service\BulkPhotoUploader:
+        arguments:
+            $uploadDirectory: '%kernel.project_dir%/public/uploads/photos'
+            $aiProvider: '%env(AI_PROVIDER)%'

@@ -30,4 +30,32 @@ class PhotoRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    /**
+     * Find recent public photos
+     */
+    public function findRecentPublic(int $limit = 5): array
+    {
+        return $this->createQueryBuilder('p')
+            ->where('p.viewPrivacy = :privacy')
+            ->setParameter('privacy', 'public')
+            ->orderBy('p.uploadedAt', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Find photos by album
+     */
+    public function findByAlbum(int $albumId): array
+    {
+        return $this->createQueryBuilder('p')
+            ->innerJoin('p.albums', 'a')
+            ->where('a.id = :albumId')
+            ->setParameter('albumId', $albumId)
+            ->orderBy('p.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

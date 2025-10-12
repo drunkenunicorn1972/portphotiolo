@@ -32,6 +32,15 @@ class Photo
     #[ORM\Column(length: 255)]
     private ?string $filename = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $filenameThumbnail = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $filenameTablet = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $filenameDesktop = null;
+
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
@@ -156,6 +165,39 @@ class Photo
     public function setFilename(string $filename): static
     {
         $this->filename = $filename;
+        return $this;
+    }
+
+    public function getFilenameThumbnail(): ?string
+    {
+        return $this->filenameThumbnail;
+    }
+
+    public function setFilenameThumbnail(?string $filenameThumbnail): static
+    {
+        $this->filenameThumbnail = $filenameThumbnail;
+        return $this;
+    }
+
+    public function getFilenameTablet(): ?string
+    {
+        return $this->filenameTablet;
+    }
+
+    public function setFilenameTablet(?string $filenameTablet): static
+    {
+        $this->filenameTablet = $filenameTablet;
+        return $this;
+    }
+
+    public function getFilenameDesktop(): ?string
+    {
+        return $this->filenameDesktop;
+    }
+
+    public function setFilenameDesktop(?string $filenameDesktop): static
+    {
+        $this->filenameDesktop = $filenameDesktop;
         return $this;
     }
 
@@ -420,6 +462,20 @@ class Photo
     {
         $this->tags->removeElement($tag);
         return $this;
+    }
+
+    /**
+     * Get the appropriate filename for a given size
+     */
+    public function getFilenameForSize(string $size): ?string
+    {
+        return match ($size) {
+            'thumb', 'thumbnail' => $this->filenameThumbnail ?? $this->filename,
+            'tablet' => $this->filenameTablet ?? $this->filename,
+            'desktop' => $this->filenameDesktop ?? $this->filename,
+            'original' => $this->filename,
+            default => $this->filename,
+        };
     }
 
     public function __toString(): string

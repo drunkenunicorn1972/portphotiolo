@@ -30,4 +30,30 @@ class AlbumRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    /**
+     * Find all albums with their photo count
+     */
+    public function findAllWithPhotoCount(): array
+    {
+        return $this->createQueryBuilder('a')
+            ->leftJoin('a.photos', 'p')
+            ->addSelect('p')
+            ->orderBy('a.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Find albums by user
+     */
+    public function findByUser(int $userId): array
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.user = :userId')
+            ->setParameter('userId', $userId)
+            ->orderBy('a.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

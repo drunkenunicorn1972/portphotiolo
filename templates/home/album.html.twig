@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ album.name }} - Photo Portfolio{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        {# Album Header #}
+        <div class="row mb-4">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Home</a></li>
+                        <li class="breadcrumb-item active">{{ album.name }}</li>
+                    </ol>
+                </nav>
+
+                <h1 class="display-4">
+                    <i class="fas fa-images"></i> {{ album.name }}
+                </h1>
+
+                {% if album.description %}
+                    <p class="lead text-muted">{{ album.description }}</p>
+                {% endif %}
+
+                <div class="d-flex gap-3 mb-3">
+                    {% if album.location %}
+                        <span class="badge bg-secondary">
+                            <i class="fas fa-map-marker-alt"></i> {{ album.location }}
+                        </span>
+                    {% endif %}
+                    <span class="badge bg-info">
+                        <i class="fas fa-camera"></i> {{ album.photoCount }} Photos
+                    </span>
+                    <span class="badge bg-primary">
+                        <i class="fas fa-eye"></i> {{ album.viewCount }} Views
+                    </span>
+                    <span class="badge bg-dark">
+                        <i class="fas fa-calendar"></i> {{ album.createdAt|date('F j, Y') }}
+                    </span>
+                </div>
+
+                {% if album.tags|length > 0 %}
+                    <div class="mb-3">
+                        {% for tag in album.tags %}
+                            <span class="badge bg-success badge-tag">
+                                <i class="fas fa-tag"></i> {{ tag.name }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Photos Grid #}
+        {% if album.photos|length > 0 %}
+            <div class="photo-grid">
+                {% for photo in album.photos %}
+                    {% if photo.viewPrivacy == 'public' %}
+                        <div class="photo-item">
+                            <a href="{{ path('app_photo_view', {id: photo.id}) }}">
+                                <picture>
+                                    <source media="(max-width: 768px)"
+                                            srcset="{{ asset('uploads/photos/' ~ (photo.filenameThumbnail ?? photo.filename)) }}">
+                                    <source media="(max-width: 1200px)"
+                                            srcset="{{ asset('uploads/photos/' ~ (photo.filenameTablet ?? photo.filename)) }}">
+                                    <img src="{{ asset('uploads/photos/' ~ (photo.filenameTablet ?? photo.filename)) }}"
+                                         alt="{{ photo.name }}"
+                                         loading="lazy">
+                                </picture>
+                                <div class="photo-overlay">
+                                    <h5>{{ photo.name }}</h5>
+                                    <div class="d-flex justify-content-between">
+                                        <span><i class="fas fa-eye"></i> {{ photo.viewCount }}</span>
+                                        <span><i class="fas fa-heart"></i> {{ photo.likeCount }}</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-warning" role="alert">
+                <i class="fas fa-exclamation-triangle"></i> This album doesn't contain any photos yet.
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
