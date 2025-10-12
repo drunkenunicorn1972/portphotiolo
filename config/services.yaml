@@ -20,6 +20,7 @@ services:
     # please note that last definitions always *replace* previous ones
     App\Service\AiImageAnalyzer:
        arguments:
+           $aiServiceLogger: '@monolog.logger.ai_service'
            $aiApiUrl: '%env(AI_API_URL)%'
            $aiApiKey: '%env(AI_API_KEY)%'
            $publicUrl: '%env(PUBLIC_URL)%'
@@ -28,3 +29,8 @@ services:
         arguments:
             $uploadDirectory: '%kernel.project_dir%/public/uploads/photos'
             $aiProvider: '%env(AI_PROVIDER)%'
+
+    App\Logging\AiServiceFormatter:
+
+    monolog.formatter.ai_service:
+        class: App\Logging\AiServiceFormatter

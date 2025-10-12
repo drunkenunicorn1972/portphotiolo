@@ -50,7 +50,7 @@ class BulkPhotoUploadController extends AbstractController
             }
 
             // Redirect to photo list filtered by the album
-            return $this->redirectToRoute('admin', [
+            return $this->redirectToRoute('members', [
                 'crudAction' => 'index',
                 'crudControllerFqcn' => PhotoCrudController::class,
                 'filters' => ['albums' => $album->getId()],
