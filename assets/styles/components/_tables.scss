@@ -1,0 +1,14 @@
+.table {
+    font-size: 0.9rem;
+    font-weight: 300;
+}
+
+.table th {
+    font-weight: 400;
+    color: var(--text-dark);
+    border-color: var(--border-color);
+}
+
+.table td {
+    border-color: var(--border-color);
+}

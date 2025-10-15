@@ -1,0 +1,37 @@
+.album-card {
+    transition: transform 0.3s ease;
+    border: 1px solid var(--border-color);
+    border-radius: 0;
+    overflow: hidden;
+    height: 100%;
+    background: var(--card-background);
+}
+
+.album-card:hover {
+    transform: translateY(-5px);
+}
+
+.album-thumbnail {
+    height: 280px;
+    object-fit: cover;
+    width: 100%;
+    filter: saturate(0.9);
+}
+
+.album-card-body {
+    padding: 1.5rem;
+}
+
+.album-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-top: 1rem;
+    font-weight: 300;
+}
+
+.album-stats i {
+    font-size: 0.75rem;
+    opacity: 0.7;
+}

@@ -1,9 +1,36 @@
 body {
-    margin: 0;
-    padding: 24px;
-    font-family: "Funnel Display", sans-serif;
-    font-optical-sizing: auto;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text-dark);
+    background-color: var(--background);
+    letter-spacing: 0.01em;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-weight: 400;
-    font-size: 18px;
-    font-style: normal;
+    letter-spacing: -0.02em;
+    color: var(--text-dark);
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 400;
+    margin: 3rem 0 2rem;
+    text-align: center;
+    color: var(--text-dark);
+    letter-spacing: -0.01em;
+}
+
+.section-title i {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-right: 0.5rem;
+}
+
+/* Smooth transitions */
+a {
+    transition: all 0.2s ease;
 }

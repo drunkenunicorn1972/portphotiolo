@@ -1,0 +1,24 @@
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.02em;
+}
+
+.card-text {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    font-weight: 300;
+}
+
+.card {
+    border: 1px solid var(--border-color);
+    border-radius: 0;
+    background: var(--card-background);
+}
+
+.card-header {
+    background-color: var(--background);
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 400;
+}

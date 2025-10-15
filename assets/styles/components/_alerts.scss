@@ -1,0 +1,11 @@
+.alert {
+    border-radius: 0;
+    border: 1px solid var(--border-color);
+    font-weight: 300;
+}
+
+.alert-info {
+    background-color: var(--background);
+    color: var(--text-dark);
+    border-color: var(--border-color);
+}

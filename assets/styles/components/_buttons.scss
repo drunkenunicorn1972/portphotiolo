@@ -1,0 +1,35 @@
+.btn-primary {
+    background-color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    color: white;
+    font-weight: 400;
+    font-size: 0.9rem;
+    padding: 0.6rem 1.5rem;
+    border-radius: 0;
+    letter-spacing: 0.05em;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-dark);
+    font-weight: 400;
+    font-size: 0.9rem;
+    padding: 0.6rem 1.5rem;
+    border-radius: 0;
+    letter-spacing: 0.05em;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: var(--background);
+    border-color: var(--text-light);
+    color: var(--text-dark);
+}

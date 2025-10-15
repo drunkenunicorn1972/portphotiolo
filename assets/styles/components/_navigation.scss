@@ -1,0 +1,43 @@
+.navbar {
+    background-color: transparent !important;
+    padding: 1.5rem 0;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.navbar-brand {
+    font-family: 'Libre Baskerville', serif;
+    font-weight: 400;
+    font-size: 1.2rem;
+    color: var(--text-dark) !important;
+    letter-spacing: 0.05em;
+    text-transform: lowercase;
+}
+
+.navbar-brand i {
+    font-size: 1rem;
+    color: var(--primary-color);
+    margin-right: 0.5rem;
+}
+
+.nav-link {
+    color: var(--text-light) !important;
+    font-weight: 300;
+    font-size: 0.95rem;
+    margin: 0 0.5rem;
+    padding: 0.5rem 0.75rem !important;
+    transition: color 0.2s ease;
+    letter-spacing: 0.03em;
+}
+
+.nav-link:hover {
+    color: var(--primary-color) !important;
+}
+
+.navbar-toggler {
+    border-color: var(--border-color);
+}
+
+.navbar-toggler-icon {
+    filter: invert(0.3);
+}

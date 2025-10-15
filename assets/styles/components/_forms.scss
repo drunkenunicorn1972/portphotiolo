@@ -1,0 +1,18 @@
+/* Form styles */
+.form-control, .form-select {
+    border-radius: 0;
+    border: 1px solid var(--border-color);
+    font-weight: 300;
+    padding: 0.6rem 0.75rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(90, 111, 92, 0.15);
+}
+
+.form-label {
+    font-weight: 400;
+    color: var(--text-dark);
+    font-size: 0.95rem;
+}

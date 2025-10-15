@@ -1,0 +1,19 @@
+.breadcrumb {
+    background: transparent;
+    padding: 1rem 0;
+    font-size: 0.9rem;
+    font-weight: 300;
+}
+
+.breadcrumb-item a {
+    color: var(--text-light);
+    text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+    color: var(--primary-color);
+}
+
+.breadcrumb-item.active {
+    color: var(--text-dark);
+}
