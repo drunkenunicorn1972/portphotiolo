@@ -156,11 +156,15 @@ class AiImageAnalyzer
             'api key' => $this->aiApiKey
         ]);
 
-        try {
-            $requestPayload = [
-                'model' => 'gpt-5-mini',
-                'messages' => [
-                    [
+        $maxRetries = 3;
+        $retryDelay = 1; // seconds
+
+        for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
+            try {
+                $requestPayload = [
+                    'model' => 'gpt-5-mini',
+                    'messages' => [
+                        [
                         'role' => 'system',
                         'content' => 'You are a professional photo curator. Analyze images and provide: 1) A short, descriptive title (max 60 chars), 2) A detailed description (2-3 sentences), 3) Relevant tags (comma-separated, max 10 tags). Format your response as JSON with keys: title, description, tags (array).',
                     ],
@@ -216,20 +220,40 @@ class AiImageAnalyzer
                 'result' => $finalResult,
                 'usage' => $responseData['usage'] ?? null,
                 'response_size_bytes' => strlen(json_encode($responseData)),
+                'attempt' => $attempt,
             ]);
 
             return $finalResult;
 
         } catch (TransportExceptionInterface $e) {
             $duration = round(microtime(true) - $startTime, 3);
+            $errorMessage = $e->getMessage();
+
+            // Check if it's a rate limit error (429)
+            if (str_contains($errorMessage, '429') && $attempt < $maxRetries) {
+                $waitTime = $retryDelay * pow(2, $attempt - 1); // Exponential backoff
+
+                $this->aiServiceLogger->warning('OpenAI API Rate Limit - Retrying', [
+                    'provider' => 'openai',
+                    'filename' => $filename,
+                    'attempt' => $attempt,
+                    'max_retries' => $maxRetries,
+                    'wait_seconds' => $waitTime,
+                    'error_message' => $errorMessage,
+                ]);
+
+                sleep($waitTime);
+                continue; // Retry
+            }
 
             $this->aiServiceLogger->error('OpenAI API Transport Error', [
                 'provider' => 'openai',
                 'filename' => $filename,
                 'error_type' => 'TransportException',
-                'error_message' => $e->getMessage(),
+                'error_message' => $errorMessage,
                 'error_code' => $e->getCode(),
                 'duration_seconds' => $duration,
+                'attempt' => $attempt,
                 'trace' => $e->getTraceAsString(),
             ]);
 
@@ -244,12 +268,16 @@ class AiImageAnalyzer
                 'error_message' => $e->getMessage(),
                 'error_code' => $e->getCode(),
                 'duration_seconds' => $duration,
+                'attempt' => $attempt,
                 'trace' => $e->getTraceAsString(),
             ]);
 
             return $defaultResult;
         }
     }
+
+    return $defaultResult;
+}
 
     /**
      * Analyze image using Google Cloud Vision API
