@@ -19,7 +19,7 @@ class HomeController extends AbstractController
         $recentPhotos = $photoRepository->findBy(
             ['viewPrivacy' => 'public'],
             ['uploadedAt' => 'DESC'],
-            5
+            10
         );
 
         // Get all albums with their photos
