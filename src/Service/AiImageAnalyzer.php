@@ -38,6 +38,7 @@ class AiImageAnalyzer
             'filename' => $filename,
             'image_url' => $imageUrl,
             'timestamp' => date('Y-m-d H:i:s'),
+            'APIkey' => $this->aiApiKey
         ]);
 
         try {
@@ -148,15 +149,16 @@ class AiImageAnalyzer
 
         $this->aiServiceLogger->info('OpenAI API Request Started', [
             'provider' => 'openai',
-            'model' => 'gpt-4o',
+            'model' => 'gpt-5-mini',
             'filename' => $filename,
             'image_url' => $imageUrl,
             'timestamp' => date('Y-m-d H:i:s'),
+            'api key' => $this->aiApiKey
         ]);
 
         try {
             $requestPayload = [
-                'model' => 'gpt-4o',
+                'model' => 'gpt-5-mini',
                 'messages' => [
                     [
                         'role' => 'system',
@@ -182,7 +184,8 @@ class AiImageAnalyzer
                 'response_format' => ['type' => 'json_object'],
             ];
 
-            $response = $this->httpClient->request('POST', 'https://api.openai.com/v1/chat/completions', [
+//            $response = $this->httpClient->request('POST', 'https://api.openai.com/v1/chat/completions', [
+            $response = $this->httpClient->request('POST', 'https://api.openai.com/v1/responses', [
                 'headers' => [
                     'Authorization' => 'Bearer ' . substr($this->aiApiKey, 0, 10) . '...',
                     'Content-Type' => 'application/json',
@@ -206,7 +209,7 @@ class AiImageAnalyzer
 
             $this->aiServiceLogger->info('OpenAI API Request Successful', [
                 'provider' => 'openai',
-                'model' => 'gpt-4o',
+                'model' => 'gpt-5-mini',
                 'filename' => $filename,
                 'status_code' => $statusCode,
                 'duration_seconds' => $duration,
