@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[524],{28:()=>{console.log("App initialized!")}},e=>{var s;s=28,e(e.s=s)}]);
