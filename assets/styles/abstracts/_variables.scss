@@ -4,8 +4,24 @@
     --secondary-color: #8b7355;        /* Warm taupe */
     --accent-color: #c89f81;           /* Soft terracotta */
     --text-dark: #3d3d3d;              /* Charcoal */
-    --text-light: #7a7a7a;             /* Warm gray */
+    --text-light: #e8e6e3;             /* Warm gray */
     --background: #fafaf8;             /* Off-white */
     --card-background: #ffffff;        /* Pure white */
     --border-color: #e8e6e3;           /* Light beige */
+
+    --alert-info-bg: #e4edea;         /* zachte grijsgroene achtergrond */
+    --alert-info-border: #a2b8b0;     /* gedempte saliegroen tint */
+    --alert-info-text: #4f6b65;       /* dieper grijsgroen, goed leesbaar */
+
+    --alert-success-bg: #e5ede7;      /* lichte mosgroene achtergrond */
+    --alert-success-border: #93ad96;  /* natuurlijke olijfgroene rand */
+    --alert-success-text: #486350;    /* donkergroen-grijs voor tekst */
+
+    --alert-warning-bg: #f8f3e4;      /* zacht warmgeel/beige */
+    --alert-warning-border: #d8c48c;  /* gedempte honingkleur */
+    --alert-warning-text: #7a6642;    /* warm bruinachtig voor contrast */
+
+    --alert-error-bg: #f6e9e7;        /* roze-beige achtergrond */
+    --alert-error-border: #d1a29a;    /* terracotta-roze rand */
+    --alert-error-text: #7b4a43;      /* aardse roodbruine tekstkleur */
 }

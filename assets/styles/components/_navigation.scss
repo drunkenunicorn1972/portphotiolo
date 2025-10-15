@@ -1,27 +1,26 @@
 .navbar {
-    background-color: transparent !important;
+    background-color: white;
     padding: 1.5rem 0;
     transition: all 0.3s ease;
     border-bottom: 1px solid var(--border-color);
 }
 
 .navbar-brand {
-    font-family: 'Libre Baskerville', serif;
+    font-family: 'Rubik Distressed', serif;
     font-weight: 400;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     color: var(--text-dark) !important;
     letter-spacing: 0.05em;
-    text-transform: lowercase;
-}
-
-.navbar-brand i {
-    font-size: 1rem;
-    color: var(--primary-color);
-    margin-right: 0.5rem;
+    text-transform: uppercase;
+    i {
+        color: var(--alert-error-border);
+        font-size: 1.4rem;
+        margin-right: 0.5rem;
+    }
 }
 
 .nav-link {
-    color: var(--text-light) !important;
+    color: var(--text-dark) !important;
     font-weight: 300;
     font-size: 0.95rem;
     margin: 0 0.5rem;

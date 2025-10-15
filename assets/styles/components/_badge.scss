@@ -1,10 +1,47 @@
-.badge {
-    font-weight: 300;
-    border-radius: 0;
-    padding: 0.4rem 0.8rem;
+.up-badge {
+    font-weight: 800;
+    padding: 0.2rem 0.4rem;
+    font-size: 0.8rem;
+    border-radius: 12px;
+
+    &.bg-dark {
+        background-color: var(--primary-color) !important;
+        color: var(--text-light) !important;
+        border: 1px solid var(--primary-color) !important;
+    }
+    &.bg-danger {
+        background-color: var(--alert-error-bg) !important;
+        color: var(--alert-error-text) !important;
+        border: 1px solid var(--alert-error-border) !important;
+    }
+    &.bg-primary {
+        background-color: var(--accent-color) !important;
+        color: var(--text-dark) !important;
+        border: 1px solid var(--primary-color) !important;
+    }
+    &.bg-secondary {
+        background-color: var(--accent-color) !important;
+        color: var(--text-dark) !important;
+        border: 1px solid var(--secondary-color) !important;
+    }
+    &.bg-info {
+        background-color: var(--alert-info-bg) !important;
+        color: var(--alert-info-text) !important;
+        border: 1px solid var(--alert-info-border) !important;
+    }
+    &.bg-warning {
+        background-color: var(--alert-warning-bg) !important;
+        color: var(--alert-warning-text) !important;
+        border: 1px solid var(--alert-warning-border) !important;
+    }
+    &.bg-success {
+        background-color: var(--alert-success-bg) !important;
+        color: var(--alert-success-text) !important;
+        border: 1px solid var(--alert-success-border) !important;
+    }
 }
 
-.badge-tag {
+.up-badge-tag {
     margin: 0.25rem;
     font-size: 0.85rem;
     background-color: var(--background);
@@ -12,27 +49,27 @@
     border: 1px solid var(--border-color);
 }
 
-.badge-success {
+.up-badge-success {
     background-color: var(--primary-color);
     border: none;
 }
 
-.badge-primary {
+.up-badge-primary {
     background-color: var(--secondary-color);
     border: none;
 }
 
-.badge-info {
+.up-badge-info {
     background-color: var(--accent-color);
     border: none;
 }
 
-.badge-danger {
+.up-badge-danger {
     background-color: #a67867;
     border: none;
 }
 
-.badge-warning {
+.up-badge-warning {
     background-color: #c89f81;
     border: none;
 }

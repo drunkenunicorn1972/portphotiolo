@@ -20,7 +20,7 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container my-5">
+    <div class="container">
         <div class="photo-detail">
             {# Breadcrumb #}
             <nav aria-label="breadcrumb">
@@ -65,7 +65,7 @@
                             <div class="mb-3">
                                 <strong><i class="fas fa-tags"></i> Tags:</strong><br>
                                 {% for tag in photo.tags %}
-                                    <span class="badge bg-success badge-tag">{{ tag.name }}</span>
+                                    <span class="up-badge bg-success up-badge-tag">{{ tag.name }}</span>
                                 {% endfor %}
                             </div>
                         {% endif %}
@@ -76,7 +76,7 @@
                                 <strong><i class="fas fa-images"></i> Albums:</strong><br>
                                 {% for album in photo.albums %}
                                     <a href="{{ path('app_album_view', {id: album.id}) }}"
-                                       class="badge bg-primary badge-tag text-decoration-none">
+                                       class="up-badge bg-primary up-badge-tag text-decoration-none">
                                         {{ album.name }}
                                     </a>
                                 {% endfor %}
@@ -85,14 +85,14 @@
 
                         {# Stats #}
                         <div class="d-flex gap-3">
-                            <span class="badge bg-info">
+                            <span class="up-badge bg-info">
                                 <i class="fas fa-eye"></i> {{ photo.viewCount }} Views
                             </span>
-                            <span class="badge bg-danger">
+                            <span class="up-badge bg-danger">
                                 <i class="fas fa-heart"></i> {{ photo.likeCount }} Likes
                             </span>
                             {% if photo.rating %}
-                                <span class="badge bg-warning">
+                                <span class="up-badge bg-warning">
                                     <i class="fas fa-star"></i> {{ photo.rating }}/5
                                 </span>
                             {% endif %}
