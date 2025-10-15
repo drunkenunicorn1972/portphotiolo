@@ -184,10 +184,10 @@ class AiImageAnalyzer
                 'response_format' => ['type' => 'json_object'],
             ];
 
-//            $response = $this->httpClient->request('POST', 'https://api.openai.com/v1/chat/completions', [
-            $response = $this->httpClient->request('POST', 'https://api.openai.com/v1/responses', [
+            $response = $this->httpClient->request('POST', 'https://api.openai.com/v1/chat/completions', [
+//            $response = $this->httpClient->request('POST', 'https://api.openai.com/v1/responses', [
                 'headers' => [
-                    'Authorization' => 'Bearer ' . substr($this->aiApiKey, 0, 10) . '...',
+                    'Authorization' => 'Bearer ' . $this->aiApiKey,
                     'Content-Type' => 'application/json',
                 ],
                 'json' => $requestPayload,
