@@ -75,7 +75,7 @@ class AiImageAnalyzer
                     'Content-Type' => 'application/json',
                 ],
                 'json' => $requestPayload,
-                'timeout' => 30,
+                'timeout' => 130,
             ]);
 
             $statusCode = $response->getStatusCode();

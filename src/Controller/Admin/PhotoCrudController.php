@@ -272,9 +272,9 @@ class PhotoCrudController extends AbstractCrudController
                 $aiProvider = $_ENV['AI_PROVIDER'] ?? 'openai';
 
                 $aiData = match($aiProvider) {
-                    'openai' => $this->aiImageAnalyzer->analyzeImageWithOpenAI($entityInstance->getFilename()),
-                    'google' => $this->aiImageAnalyzer->analyzeImageWithGoogleVision($entityInstance->getFilename()),
-                    default => $this->aiImageAnalyzer->analyzeImage($entityInstance->getFilename()),
+                    'openai' => $this->aiImageAnalyzer->analyzeImageWithOpenAI($entityInstance->getFilenameTablet()),
+                    'google' => $this->aiImageAnalyzer->analyzeImageWithGoogleVision($entityInstance->getFilenameTablet()),
+                    default => $this->aiImageAnalyzer->analyzeImage($entityInstance->getFilenameTablet()),
                 };
 
                 // Apply AI-generated data only if fields are empty
@@ -342,9 +342,9 @@ class PhotoCrudController extends AbstractCrudController
                 $aiProvider = $_ENV['AI_PROVIDER'] ?? 'openai';
 
                 $aiData = match($aiProvider) {
-                    'openai' => $this->aiImageAnalyzer->analyzeImageWithOpenAI($entityInstance->getFilename()),
-                    'google' => $this->aiImageAnalyzer->analyzeImageWithGoogleVision($entityInstance->getFilename()),
-                    default => $this->aiImageAnalyzer->analyzeImage($entityInstance->getFilename()),
+                    'openai' => $this->aiImageAnalyzer->analyzeImageWithOpenAI($entityInstance->getFilenameTablet()),
+                    'google' => $this->aiImageAnalyzer->analyzeImageWithGoogleVision($entityInstance->getFilenameTablet()),
+                    default => $this->aiImageAnalyzer->analyzeImage($entityInstance->getFilenameTablet()),
                 };
 
                 // Update tags with AI suggestions (merge with existing)
