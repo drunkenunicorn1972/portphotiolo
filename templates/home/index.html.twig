@@ -69,6 +69,7 @@
                 margin-bottom: 5px;
                 font-weight: 600;
                 text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+                color: #fff;
             }
 
             .hero-swiper .photo-overlay p {
@@ -96,7 +97,7 @@
 
             .hero-swiper .swiper-button-next,
             .hero-swiper .swiper-button-prev {
-                color: #0d6efd;
+                color: var(--secondary-color);
                 background: white;
                 width: 44px;
                 height: 44px;
@@ -112,7 +113,7 @@
             .hero-swiper .swiper-pagination-bullet {
                 width: 10px;
                 height: 10px;
-                background: #0d6efd;
+                background: var(--secondary-color);
                 opacity: 0.5;
             }
 
@@ -163,7 +164,7 @@
         <div class="hero-swiper-container">
             <div class="container">
                 <h2 class="section-title text-center mb-4">
-                    <i class="fas fa-images"></i> Recent Photos
+                    Recent Photos
                 </h2>
             </div>
 
@@ -209,7 +210,7 @@
     {# Albums Section #}
     <div class="container">
         <h2 class="section-title">
-            <i class="fas fa-images"></i> Photo Albums
+            Photo Albums
         </h2>
 
         {% if albums is empty %}

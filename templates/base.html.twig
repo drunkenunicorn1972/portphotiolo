@@ -30,6 +30,9 @@
             --background: #fafaf8;             /* Off-white */
             --card-background: #ffffff;        /* Pure white */
             --border-color: #e8e6e3;           /* Light beige */
+            --bs-primary-rgb: rgb(200, 159, 129);
+            --bs-bg-opacity: 0;
+            --bs-info-rgb: rgb(90, 111, 92);
         }
 
         * {
@@ -49,10 +52,15 @@
         }
 
         h1, h2, h3, h4, h5, h6 {
-            font-family: 'Libre Baskerville', serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             font-weight: 400;
             letter-spacing: -0.02em;
             color: var(--text-dark);
+        }
+
+
+        .bg-primary {
+            background-color: var(--accent-color);
         }
 
         .navbar {

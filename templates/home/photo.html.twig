@@ -212,15 +212,15 @@
             // Create popup content
             const popupContent = `
                 <div style="text-align: center;">
-                    <img src="{{ asset('uploads/photos/' ~ (photo.filenameThumbnail ?? photo.filename)) }}"
-                         alt="{{ photo.name }}"
-                         style="max-width: 200px; max-height: 150px; border-radius: 4px; margin-bottom: 8px;">
+                    {#<img src="{{ asset('uploads/photos/' ~ (photo.filenameThumbnail ?? photo.filename)) }}"#}
+                    {#     alt="{{ photo.name }}"#}
+                    {#     style="max-width: 200px; max-height: 150px; border-radius: 4px; margin-bottom: 8px;">#}
                     <h6>{{ photo.name }}</h6>
                     {% if photo.location %}
                         <small>{{ photo.location }}</small>
                     {% endif %}
                     <br>
-                    <small class="text-muted">{{ photo.latitude }}, {{ photo.longitude }}</small>
+                    {#<small class="text-muted">{{ photo.latitude }}, {{ photo.longitude }}</small>#}
                 </div>
             `;
 
