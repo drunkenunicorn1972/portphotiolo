@@ -203,6 +203,7 @@ class AiImageAnalyzer
                 'data' => $data,
             ]);
 
+            dump($output);
             dd($data);
 
             $finalResult = [
