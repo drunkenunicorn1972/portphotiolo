@@ -194,6 +194,15 @@ class AiImageAnalyzer
             // Probeer JSON eruit te halen als het model dat netjes retourneert
             $data = json_decode($output, true);
             if (json_last_error() !== JSON_ERROR_NONE) {
+                $this->aiServiceLogger->error('OpenAI JSON Decode Failed', [
+                    'provider' => 'openai',
+                    'filename' => $filename,
+                    'json_error_code' => json_last_error(),
+                    'json_error_message' => json_last_error_msg(),
+                    'raw_output' => $output,
+                    'output_preview' => substr($output, 0, 500), // First 500 chars
+                ]);
+
                 $data = ['raw_output' => $output];
             }
 
@@ -202,9 +211,6 @@ class AiImageAnalyzer
                 'filename' => $filename,
                 'data' => $data,
             ]);
-
-            dump($output);
-            dd($data);
 
             $finalResult = [
                 'name' => $data['title'] ?? null,
