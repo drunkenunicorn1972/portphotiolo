@@ -209,7 +209,7 @@ class AiImageAnalyzer
                 'description' => $data['description'] ?? null,
                 'tags' => is_array($data['tags'] ?? null) ? $data['tags'] : [],
             ];
-            return $data;
+            return $finalResult;
 
         } catch (RateLimitException $e) {
             // Te veel requests (HTTP 429)
