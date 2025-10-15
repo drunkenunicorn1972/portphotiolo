@@ -191,7 +191,14 @@ class AiImageAnalyzer
             // Antwoord ophalen
             $output = $response['choices'][0]['message']['content'] ?? '';
 
+            $this->aiServiceLogger->error('OpenAI Response', [
+                'provider' => 'openai',
+                'response' => $response
+            ]);
+
             // Probeer JSON eruit te halen als het model dat netjes retourneert
+            $output = str_replace('```json', '', $output);
+            $output = str_replace('```', '', $output);
             $data = json_decode($output, true);
             if (json_last_error() !== JSON_ERROR_NONE) {
                 $this->aiServiceLogger->error('OpenAI JSON Decode Failed', [
