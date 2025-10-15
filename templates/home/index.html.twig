@@ -176,8 +176,8 @@
                                     <source media="(max-width: 768px)"
                                             srcset="{{ asset('uploads/photos/' ~ (photo.filenameTablet ?? photo.filename)) }}">
                                     <source media="(max-width: 1920px)"
-                                            srcset="{{ asset('uploads/photos/' ~ (photo.filenameDesktop ?? photo.filename)) }}">
-                                    <img src="{{ asset('uploads/photos/' ~ photo.filename) }}"
+                                            srcset="{{ asset('uploads/photos/' ~ (photo.filenameTablet ?? photo.filename)) }}">
+                                    <img src="{{ asset('uploads/photos/' ~ photo.filenameTablet) }}"
                                          alt="{{ photo.name }}"
                                          loading="lazy">
                                 </picture>
