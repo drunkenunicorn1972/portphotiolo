@@ -203,6 +203,7 @@ class AiImageAnalyzer
                 'data' => $data,
             ]);
 
+            dd($data);
 
             $finalResult = [
                 'name' => $data['title'] ?? null,
