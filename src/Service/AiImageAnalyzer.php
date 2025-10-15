@@ -213,8 +213,7 @@ class AiImageAnalyzer
 
         } catch (RateLimitException $e) {
             // Te veel requests (HTTP 429)
-
-            $this->aiServiceLogger->error('OpenAI API Request Failed', [
+            $this->aiServiceLogger->error('OpenAI API Request Failed: Rate limit reached', [
                 'provider' => 'openai',
                 'filename' => $filename,
                 'error_type' => get_class($e),
@@ -222,7 +221,6 @@ class AiImageAnalyzer
                 'error_code' => $e->getCode(),
                 'trace' => $e->getTraceAsString(),
             ]);
-
 
             return [
                 'error' => 'Rate limit bereikt. Probeer later opnieuw.',
@@ -231,7 +229,7 @@ class AiImageAnalyzer
         } catch (ErrorException $e) {
             // Algemene API-fout (bijv. 500 of 400)
 
-            $this->aiServiceLogger->error('OpenAI API Request Failed', [
+            $this->aiServiceLogger->error('OpenAI API Request Failed:  General Error', [
                 'provider' => 'openai',
                 'filename' => $filename,
                 'error_type' => get_class($e),
@@ -240,7 +238,6 @@ class AiImageAnalyzer
                 'trace' => $e->getTraceAsString(),
             ]);
 
-
             return [
                 'error' => 'OpenAI API-fout',
                 'details' => $e->getMessage(),
@@ -248,7 +245,7 @@ class AiImageAnalyzer
         } catch (\Throwable $e) {
             // Alles wat anders fout gaat (bestanden, netwerk, etc.)
 
-              $this->aiServiceLogger->error('OpenAI API Request Failed', [
+              $this->aiServiceLogger->error('OpenAI API Request Failed: Unexpected error', [
                 'provider' => 'openai',
                 'filename' => $filename,
                 'error_type' => get_class($e),
