@@ -4,20 +4,40 @@ ol.breadcrumb {
     font-weight: 300;
 
     li.breadcrumb-item {
-        color: var(--primary-color);
+        color: var(--text-light);
         font-size: 0.8rem;
 
         a {
             text-decoration: underline;
 
             &:hover {
-                color: var(--primary-color);
+                color: var(--accent-color);
                 text-decoration: none;
             }
         }
         &.active {
-            color: var(--text-dark);
+            color: var(--text-light);
             font-weight: 800;
+        }
+
+        // Arrow separator before each item (except first)
+        &:not(:first-child):before {
+            color: var(--text-light);
+            content: "\f061";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            float: left;
+            padding-right: var(--bs-breadcrumb-item-padding-x);
+        }
+
+        // Home icon for the first item
+        &:first-child:before {
+            color: var(--text-light);
+            content: "\f015";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            float: left;
+            padding-right: var(--bs-breadcrumb-item-padding-x);
         }
     }
 }

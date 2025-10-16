@@ -51,7 +51,7 @@
     width: 100%;
     height: auto;
     border-radius: 0;
-    border: 1px solid var(--border-color);
+    border: 15px solid white;
 }
 
 .photo-meta {
@@ -60,6 +60,9 @@
     border-radius: 0;
     margin-top: 1.5rem;
     border: 1px solid var(--border-color);
+
+    h1,h2,h3,h4,h5,h6, p, td, strong { color: var(--text-dark); }
+
 }
 
 .photo-meta h5 {
