@@ -3,8 +3,8 @@ body {
     font-weight: 300;
     font-size: 16px;
     line-height: 1.7;
-    color: var(--text-dark);
-    background-color: var(--background);
+    color: var(--text-light);
+    background-color: var( --text-dark);
     letter-spacing: 0.01em;
 }
 
@@ -12,7 +12,7 @@ h1, h2, h3, h4, h5, h6 {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-weight: 400;
     letter-spacing: -0.02em;
-    color: var(--text-dark);
+    color: var(--text-light);
 }
 
 .section-title {
@@ -20,19 +20,19 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 400;
     margin: 3rem 0 2rem;
     text-align: center;
-    color: var(--text-dark);
+    color: var(--text-light);
     letter-spacing: -0.01em;
 }
 
 .section-title i {
     font-size: 1.5rem;
-    color: var(--primary-color);
+    color: var(--accent-color);
     margin-right: 0.5rem;
 }
 
 /* Smooth transitions */
 a {
-    color: var(--primary-color);
+    color: var(--accent-color);
     text-decoration: underline;
     transition: all 0.2s ease;
 }
