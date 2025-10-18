@@ -74,6 +74,11 @@ Encore
 
     // uncomment if you're having problems with a jQuery plugin
     //.autoProvidejQuery()
+
+    // Add this alias for Stimulus bridge
+    .addAliases({
+        '@symfony/stimulus-bridge/controllers.json': require.resolve('./assets/controllers.json')
+    })
 ;
 
 module.exports = Encore.getWebpackConfig();

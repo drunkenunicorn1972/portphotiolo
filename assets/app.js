@@ -6,5 +6,6 @@
  */
 import './styles/app.scss';
 // Start the Stimulus application (if using)
-// import './bootstrap';
+import './bootstrap';
+
 console.log('App initialized!');

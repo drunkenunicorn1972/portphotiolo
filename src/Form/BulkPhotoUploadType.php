@@ -48,8 +48,9 @@ class BulkPhotoUploadType extends AbstractType
                     ]),
                 ],
                 'attr' => [
-                    'class' => 'form-control',
+                    'class' => 'form-control file-upload-input',
                     'accept' => 'image/*',
+                    'data-dropzone' => 'true',
                 ],
             ]);
     }

@@ -82,12 +82,15 @@ class PhotoCrudController extends AbstractCrudController
     {
         $isNew = $pageName === Crud::PAGE_NEW;
         $isEdit = $pageName === Crud::PAGE_EDIT;
+        $isIndex = $pageName === Crud::PAGE_INDEX;
 
         yield IdField::new('id')
+            ->hideOnIndex()
             ->hideOnForm();
 
         yield TextField::new('uuid')
             ->hideOnForm()
+            ->hideOnIndex()
             ->formatValue(function ($value) {
                 return $value ? $value->toRfc4122() : '';
             });
@@ -103,12 +106,19 @@ class PhotoCrudController extends AbstractCrudController
         }
         yield $nameField;
 
-        yield ImageField::new('filename')
-            ->setBasePath('uploads/photos')
-            ->setUploadDir('public/uploads/photos')
-            ->setUploadedFileNamePattern('[randomhash].[extension]')
-            ->setRequired($isNew)
-            ->setLabel('Photo File');
+        // Use thumbnail for index, full image for edit/detail
+        if ($isIndex) {
+            yield ImageField::new('filenameThumbnail')
+                ->setBasePath('uploads/photos')
+                ->setLabel('Photo');
+        } else {
+            yield ImageField::new('filename')
+                ->setBasePath('uploads/photos')
+                ->setUploadDir('public/uploads/photos')
+                ->setUploadedFileNamePattern('[randomhash].[extension]')
+                ->setRequired($isNew)
+                ->setLabel('Photo File');
+        }
 
         $descriptionField = TextareaField::new('description')
             ->hideOnIndex();
