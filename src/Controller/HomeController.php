@@ -49,10 +49,10 @@ class HomeController extends AbstractController
         ]);
     }
 
-    #[Route('/photo/{id}', name: 'app_photo_view')]
-    public function viewPhoto(int $id, PhotoRepository $photoRepository): Response
+    #[Route('/photo/{uuid}', name: 'app_photo_view')]
+    public function viewPhoto(string $uuid, PhotoRepository $photoRepository): Response
     {
-        $photo = $photoRepository->find($id);
+        $photo = $photoRepository->findOneBy(['uuid' => $uuid, 'viewPrivacy' => 'public']);
 
         if (!$photo) {
             throw $this->createNotFoundException('Photo not found');

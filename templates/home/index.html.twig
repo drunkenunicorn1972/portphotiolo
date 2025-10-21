@@ -40,7 +40,7 @@
                                     {% if photo.description %}
                                         <p>{{ photo.description|slice(0, 80) }}{% if photo.description|length > 80 %}...{% endif %}</p>
                                     {% endif %}
-                                    <a href="{{ path('app_photo_view', {id: photo.id}) }}" class="btn btn-primary btn-sm">
+                                    <a href="{{ path('app_photo_view', {uuid: photo.uuid}) }}" class="btn btn-primary btn-sm">
                                         <i class="fas fa-eye"></i> View Photo
                                     </a>
                                 </div>

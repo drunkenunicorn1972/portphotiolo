@@ -57,7 +57,7 @@
                 {% for photo in album.photos %}
                     {% if photo.viewPrivacy == 'public' %}
                         <div class="photo-item">
-                            <a href="{{ path('app_photo_view', {id: photo.id}) }}">
+                            <a href="{{ path('app_photo_view', {uuid: photo.uuid}) }}">
                                 <picture>
                                     <source media="(max-width: 768px)"
                                             srcset="{{ asset('uploads/photos/' ~ (photo.filenameThumbnail ?? photo.filename)) }}">

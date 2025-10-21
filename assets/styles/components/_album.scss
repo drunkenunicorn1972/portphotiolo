@@ -5,6 +5,7 @@
     overflow: hidden;
     height: 100%;
     background: var(--card-background);
+    max-height: 250px;
 }
 
 .album-card:hover {
