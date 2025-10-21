@@ -6,6 +6,12 @@
  */
 import './styles/app.scss';
 // Start the Stimulus application (if using)
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Make it globally available if needed
+window.L = L;
+
 import './bootstrap';
 
 console.log('App initialized!');

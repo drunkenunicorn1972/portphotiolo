@@ -1,4 +1,0 @@
-/*!
-Turbo 8.0.17
-Copyright © 2025 37signals LLC
- */

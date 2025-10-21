@@ -5,9 +5,7 @@
 {% block stylesheets %}
     {{ parent() }}
     {% if photo.latitude and photo.longitude %}
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-              integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-              crossorigin=""/>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
         <style>
             #map {
                 height: 400px;
@@ -164,70 +162,21 @@
             {% if photo.latitude and photo.longitude %}
                 <div class="mt-5">
                     <h5><i class="fas fa-map-marker-alt"></i> Photo Location</h5>
-                    <div class="mb-2">
-                        <small class="text-muted">
-                            Coordinates: {{ photo.latitude }}, {{ photo.longitude }}
-                            {% if photo.location %}
-                                - {{ photo.location }}
-                            {% endif %}
-                        </small>
+{#                    <div class="mb-2">#}
+{#                        <small class="text-muted">#}
+{#                            Coordinates: {{ photo.latitude }}, {{ photo.longitude }}#}
+{#                            {% if photo.location %}#}
+{#                                - {{ photo.location }}#}
+{#                            {% endif %}#}
+{#                        </small>#}
+{#                    </div>#}
+                    <div data-controller="map"
+                         data-map-latitude-value="{{ photo.latitude }}"
+                         data-map-longitude-value="{{ photo.longitude }}"
+                         style="height: 400px;">
                     </div>
-                    <div id="map"></div>
                 </div>
             {% endif %}
         </div>
     </div>
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    {% if photo.latitude and photo.longitude %}
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-                integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-                crossorigin=""></script>
-        <script>
-            // Initialize the map
-            const map = L.map('map').setView([{{ photo.latitude }}, {{ photo.longitude }}], 13);
-
-            // Add OpenStreetMap tile layer
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                maxZoom: 19
-            }).addTo(map);
-
-            // Create custom marker icon (camera icon)
-            const cameraIcon = L.divIcon({
-                className: 'custom-camera-marker',
-                html: '<i class="fas fa-camera fa-2x" style="color: #dc3545;"></i>',
-                iconSize: [30, 30],
-                iconAnchor: [15, 30],
-                popupAnchor: [0, -30]
-            });
-
-            // Add marker with popup
-            const marker = L.marker([{{ photo.latitude }}, {{ photo.longitude }}], {
-                icon: cameraIcon
-            }).addTo(map);
-
-            // Create popup content
-            const popupContent = `
-                <div style="text-align: center;">
-                    {#<img src="{{ asset('uploads/photos/' ~ (photo.filenameThumbnail ?? photo.filename)) }}"#}
-                    {#     alt="{{ photo.name }}"#}
-                    {#     style="max-width: 200px; max-height: 150px; border-radius: 4px; margin-bottom: 8px;">#}
-                    <h6>{{ photo.name }}</h6>
-                    {% if photo.location %}
-                        <small>{{ photo.location }}</small>
-                    {% endif %}
-                    <br>
-                    {#<small class="text-muted">{{ photo.latitude }}, {{ photo.longitude }}</small>#}
-                </div>
-            `;
-
-            marker.bindPopup(popupContent);
-
-            // Open popup by default
-            marker.openPopup();
-        </script>
-    {% endif %}
 {% endblock %}
