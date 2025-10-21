@@ -161,17 +161,9 @@
             {% if photo.latitude and photo.longitude %}
                 <div class="mt-5">
                     <h5><i class="fas fa-map-marker-alt"></i> Photo Location</h5>
-{#                    <div class="mb-2">#}
-{#                        <small class="text-muted">#}
-{#                            Coordinates: {{ photo.latitude }}, {{ photo.longitude }}#}
-{#                            {% if photo.location %}#}
-{#                                - {{ photo.location }}#}
-{#                            {% endif %}#}
-{#                        </small>#}
-{#                    </div>#}
-                    <div data-controller="map"
-                         data-map-latitude-value="{{ photo.latitude }}"
-                         data-map-longitude-value="{{ photo.longitude }}"
+                    <div id="map" data-controller="leaflet"
+                         data-leaflet-latitude-value="{{ photo.latitude }}"
+                         data-leaflet-longitude-value="{{ photo.longitude }}"
                          style="height: 400px;">
                     </div>
                 </div>
