@@ -1,4 +1,19 @@
+
 import { Controller } from '@hotwired/stimulus';
+import L from 'leaflet';
+
+// Fix default marker icon issue with webpack
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+    iconUrl: icon,
+    shadowUrl: iconShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 export default class extends Controller {
     static values = {
@@ -8,6 +23,10 @@ export default class extends Controller {
     }
 
     connect() {
+        console.log('Leaflet controller connected');
+        console.log('Latitude:', this.latitudeValue);
+        console.log('Longitude:', this.longitudeValue);
+
         // Ensure Leaflet is loaded
         if (typeof L === 'undefined') {
             console.error('Leaflet is not loaded');
