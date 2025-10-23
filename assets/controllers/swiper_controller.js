@@ -47,15 +47,15 @@ export default class extends Controller {
             breakpoints: {
                 // Mobile
                 320: {
-                    spaceBetween: 10,
+                    spaceBetween: 12,
                 },
                 // Tablet
                 768: {
-                    spaceBetween: 15,
+                    spaceBetween: 16,
                 },
                 // Desktop
                 1024: {
-                    spaceBetween: 20,
+                    spaceBetween: 24,
                 }
             },
 
