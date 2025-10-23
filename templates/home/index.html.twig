@@ -3,13 +3,6 @@
 
 {% block title %}Home - Photo Portfolio{% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    {% if recentPhotos is not empty %}
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    {% endif %}
-{% endblock %}
-
 {% block body %}
     {# Hero Conveyor Belt Carousel #}
     {% if recentPhotos is not empty %}
@@ -20,7 +13,7 @@
                 </h2>
             </div>
 
-            <div class="swiper hero-swiper">
+            <div class="swiper hero-swiper" data-controller="swiper">
                 <div class="swiper-wrapper">
                     {% for photo in recentPhotos %}
                         <div class="swiper-slide">
@@ -120,72 +113,4 @@
             </div>
         {% endif %}
     </div>
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    {% if recentPhotos is not empty %}
-        <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-        <script>
-            const swiper = new Swiper('.hero-swiper', {
-                // Display multiple slides at once
-                slidesPerView: 'auto',
-                spaceBetween: 20,
-                centeredSlides: true,
-                loop: true,
-
-                // Auto-play
-                autoplay: {
-                    delay: 3000,
-                    disableOnInteraction: false,
-                    pauseOnMouseEnter: true,
-                },
-
-                // Speed
-                speed: 800,
-
-                // Smooth momentum
-                freeMode: false,
-
-                // Navigation arrows
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                },
-
-                // Pagination dots
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                    dynamicBullets: true,
-                },
-
-                // Responsive breakpoints
-                breakpoints: {
-                    // Mobile
-                    320: {
-                        spaceBetween: 10,
-                    },
-                    // Tablet
-                    768: {
-                        spaceBetween: 15,
-                    },
-                    // Desktop
-                    1024: {
-                        spaceBetween: 20,
-                    }
-                },
-
-                // Keyboard control
-                keyboard: {
-                    enabled: true,
-                },
-
-                // Mouse wheel control
-                mousewheel: {
-                    forceToAxis: true,
-                },
-            });
-        </script>
-    {% endif %}
 {% endblock %}

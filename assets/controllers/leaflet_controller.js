@@ -22,9 +22,9 @@ export default class extends Controller {
     }
 
     connect() {
-        console.log('Leaflet controller connected');
-        console.log('Latitude:', this.latitudeValue);
-        console.log('Longitude:', this.longitudeValue);
+        // console.log('Leaflet controller connected');
+        // console.log('Latitude:', this.latitudeValue);
+        // console.log('Longitude:', this.longitudeValue);
 
         // Ensure Leaflet is loaded
         if (typeof L === 'undefined') {
