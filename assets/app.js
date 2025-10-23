@@ -16,7 +16,7 @@ import L from 'leaflet';
 window.L = L;
 
 // start stimulus
-import './bootstrap';
+import './bootstrap.js';
 
 // Notify the console that the app is ready to go!
 console.log('App initialized!');

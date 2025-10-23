@@ -14,6 +14,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 
 class AlbumCrudController extends AbstractCrudController
 {
@@ -85,6 +86,16 @@ class AlbumCrudController extends AbstractCrudController
 
         yield DateTimeField::new('createdAt')
             ->hideOnForm();
+
+        yield ChoiceField::new('requiredRole', 'Required Role')
+            ->setChoices([
+                'Public (No Role)' => null,
+                'User' => 'ROLE_USER',
+                'Family' => 'ROLE_FAMILY',
+                'Friend' => 'ROLE_FRIEND',
+                'Admin' => 'ROLE_ADMIN',
+            ])
+            ->setHelp('Select which role is required to view this album');
     }
 
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void

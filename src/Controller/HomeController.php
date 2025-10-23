@@ -15,19 +15,11 @@ class HomeController extends AbstractController
         PhotoRepository $photoRepository,
         AlbumRepository $albumRepository
     ): Response {
-        // Get last 5 uploaded public photos
-        $recentPhotos = $photoRepository->findBy(
-            ['viewPrivacy' => 'public'],
-            ['uploadedAt' => 'DESC'],
-            10
-        );
-
-        // Get all albums with their photos
-        $albums = $albumRepository->findAllWithPhotoCount();
+        $user = $this->getUser();
 
         return $this->render('home/index.html.twig', [
-            'recentPhotos' => $recentPhotos,
-            'albums' => $albums,
+            'albums' => $albumRepository->findAccessibleAlbums($user),
+            'recentPhotos' => $photoRepository->findAccessiblePhotos($user),
         ]);
     }
 
@@ -38,6 +30,11 @@ class HomeController extends AbstractController
 
         if (!$album) {
             throw $this->createNotFoundException('Album not found');
+        }
+
+        // Check if user has required role
+        if ($album->getRequiredRole() && !$this->isGranted($album->getRequiredRole())) {
+            throw $this->createAccessDeniedException('You need special access to view this album.');
         }
 
         // Increment view count
@@ -56,6 +53,11 @@ class HomeController extends AbstractController
 
         if (!$photo) {
             throw $this->createNotFoundException('Photo not found');
+        }
+
+        // Check if user has required role
+        if ($photo->getRequiredRole() && !$this->isGranted($photo->getRequiredRole())) {
+            throw $this->createAccessDeniedException('You need special access to view this photo.');
         }
 
         // Check privacy (for now, only show public photos)

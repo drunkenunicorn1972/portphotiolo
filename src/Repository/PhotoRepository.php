@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Photo;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -55,6 +56,25 @@ class PhotoRepository extends ServiceEntityRepository
             ->where('a.id = :albumId')
             ->setParameter('albumId', $albumId)
             ->orderBy('p.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findAccessiblePhotos(?User $user = null): array
+    {
+        $qb = $this->createQueryBuilder('p');
+
+        if (!$user) {
+            // Not logged in, only show public photos
+            $qb->where('p.requiredRole IS NULL');
+        } else {
+            $roles = $user->getRoles();
+            $qb->where('p.requiredRole IS NULL')
+                ->orWhere('p.requiredRole IN (:roles)')
+                ->setParameter('roles', $roles);
+        }
+
+        return $qb->orderBy('p.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
     }

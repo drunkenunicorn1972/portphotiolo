@@ -67,6 +67,9 @@ class Album
     #[ORM\JoinTable(name: 'album_tags')]
     private Collection $tags;
 
+    #[ORM\Column(type: Types::STRING, length: 50, nullable: true)]
+    private ?string $requiredRole = null;
+
     public function __construct()
     {
         $this->uuid = Uuid::v4();
@@ -282,5 +285,16 @@ class Album
     public function __toString(): string
     {
         return $this->name ?? '';
+    }
+
+    public function getRequiredRole(): ?string
+    {
+        return $this->requiredRole;
+    }
+
+    public function setRequiredRole(?string $requiredRole): static
+    {
+        $this->requiredRole = $requiredRole;
+        return $this;
     }
 }

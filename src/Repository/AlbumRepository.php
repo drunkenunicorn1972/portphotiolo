@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Album;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -53,6 +54,25 @@ class AlbumRepository extends ServiceEntityRepository
             ->where('a.user = :userId')
             ->setParameter('userId', $userId)
             ->orderBy('a.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findAccessibleAlbums(?User $user = null): array
+    {
+        $qb = $this->createQueryBuilder('a');
+
+        if (!$user) {
+            // Not logged in, only show public albums
+            $qb->where('a.requiredRole IS NULL');
+        } else {
+            $roles = $user->getRoles();
+            $qb->where('a.requiredRole IS NULL')
+                ->orWhere('a.requiredRole IN (:roles)')
+                ->setParameter('roles', $roles);
+        }
+
+        return $qb->orderBy('a.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
     }
