@@ -27,8 +27,16 @@ services:
 
     App\Service\BulkPhotoUploader:
         arguments:
-            $uploadDirectory: '%kernel.project_dir%/public/uploads/photos'
+            $uploadDirectory: '%kernel.project_dir%/var/uploads/photos'
             $aiProvider: '%env(AI_PROVIDER)%'
+
+    App\Controller\PhotoServeController:
+        arguments:
+            $uploadDirectory: '%kernel.project_dir%/var/uploads/photos'
+
+    App\Controller\Admin\PhotoCrudController:
+        arguments:
+            $uploadDirectory: '%kernel.project_dir%/var/uploads/photos'
 
     App\Logging\AiServiceFormatter:
 

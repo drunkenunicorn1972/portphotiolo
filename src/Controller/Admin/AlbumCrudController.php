@@ -39,13 +39,10 @@ class AlbumCrudController extends AbstractCrudController
 
         yield TextField::new('uuid')
             ->hideOnForm()
+            ->hideOnIndex()
             ->formatValue(function ($value) {
                 return $value ? $value->toRfc4122() : '';
             });
-
-        // Hide user field on forms, show on detail/index
-        yield AssociationField::new('user')
-            ->hideOnForm();
 
         yield TextField::new('name')
             ->setRequired(true);
@@ -84,18 +81,24 @@ class AlbumCrudController extends AbstractCrudController
             ->autocomplete()
             ->setFormTypeOption('by_reference', false);
 
+        yield ChoiceField::new('viewPrivacy')
+            ->setChoices([
+                'Public' => 'public',
+                'Member' => 'member',
+                'Friends' => 'friend',
+                'Family' => 'family',
+                'Private' => 'private',
+            ])
+            ->setRequired(true);
+
+        // Hide user field on forms, show on detail/index
+        yield AssociationField::new('user')
+            ->hideOnForm();
+
         yield DateTimeField::new('createdAt')
             ->hideOnForm();
 
-        yield ChoiceField::new('requiredRole', 'Required Role')
-            ->setChoices([
-                'Public (No Role)' => null,
-                'User' => 'ROLE_USER',
-                'Family' => 'ROLE_FAMILY',
-                'Friend' => 'ROLE_FRIEND',
-                'Admin' => 'ROLE_ADMIN',
-            ])
-            ->setHelp('Select which role is required to view this album');
+
     }
 
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void

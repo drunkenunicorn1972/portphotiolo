@@ -60,10 +60,10 @@
                             <a href="{{ path('app_photo_view', {uuid: photo.uuid}) }}">
                                 <picture>
                                     <source media="(max-width: 768px)"
-                                            srcset="{{ asset('uploads/photos/' ~ (photo.filenameThumbnail ?? photo.filename)) }}">
+                                            srcset="{{ path('app_photo_serve', {uuid: photo.uuid, size: 'thumbnail'}) }}">
                                     <source media="(max-width: 1200px)"
-                                            srcset="{{ asset('uploads/photos/' ~ (photo.filenameTablet ?? photo.filename)) }}">
-                                    <img src="{{ asset('uploads/photos/' ~ (photo.filenameTablet ?? photo.filename)) }}"
+                                            srcset="{{ path('app_photo_serve', {uuid: photo.uuid, size: 'tablet'}) }}">
+                                    <img src="{{ path('app_photo_serve', {uuid: photo.uuid, size: 'tablet'}) }}"
                                          alt="{{ photo.name }}"
                                          loading="lazy">
                                 </picture>

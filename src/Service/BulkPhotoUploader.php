@@ -34,7 +34,8 @@ class BulkPhotoUploader
     public function uploadPhotosToAlbum(
         array $uploadedFiles,
         Album $album,
-        UserInterface $user
+        UserInterface $user,
+        string $viewPrivacy = 'public',
     ): array {
         $results = [
             'success' => 0,
@@ -51,13 +52,14 @@ class BulkPhotoUploader
             }
 
             try {
-                $photo = $this->processPhoto($uploadedFile, $album, $user);
+                $photo = $this->processPhoto($uploadedFile, $album, $user, $viewPrivacy );
                 $results['photos'][] = $photo;
                 $results['success']++;
 
                 $this->logger->info('Bulk upload: Photo processed successfully', [
                     'filename' => $photo->getFilename(),
                     'album' => $album->getName(),
+                    'privacy' => $viewPrivacy
                 ]);
             } catch (\Exception $e) {
                 $results['failed']++;
@@ -87,7 +89,8 @@ class BulkPhotoUploader
     private function processPhoto(
         UploadedFile $uploadedFile,
         Album $album,
-        UserInterface $user
+        UserInterface $user,
+        string $viewPrivacy = 'public',
     ): Photo {
         // Generate unique filename
         $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
@@ -102,7 +105,7 @@ class BulkPhotoUploader
         $photo = new Photo();
         $photo->setUser($user);
         $photo->setFilename($newFilename);
-        $photo->setViewPrivacy('public'); // Default to public
+        $photo->setViewPrivacy($viewPrivacy); // Apply user-selected privacy
 
         // 1. Generate image sizes
         try {

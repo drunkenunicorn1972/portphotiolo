@@ -64,14 +64,49 @@ class PhotoRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('p');
 
+        // Return that what the user is allowed to see
         if (!$user) {
             // Not logged in, only show public photos
-            $qb->where('p.requiredRole IS NULL');
+            $qb->where('p.viewPrivacy = :privacy')
+                ->setParameter('privacy', 'public');
         } else {
-            $roles = $user->getRoles();
-            $qb->where('p.requiredRole IS NULL')
-                ->orWhere('p.requiredRole IN (:roles)')
-                ->setParameter('roles', $roles);
+            $userRoles = $user->getRoles();
+            if (in_array('ROLE_USER', $userRoles) && !in_array('ROLE_ADMIN', $userRoles)) {
+                $qb->where('p.viewPrivacy = :privacy1')
+                    ->orWhere('p.viewPrivacy = :privacy2')
+                    ->setParameter('privacy1', 'public')
+                    ->setParameter('privacy2', 'member');
+            }
+            if (in_array('ROLE_FRIEND', $userRoles) && !in_array('ROLE_ADMIN', $userRoles)) {
+                $qb->where('p.viewPrivacy = :privacy1')
+                    ->orWhere('p.viewPrivacy = :privacy2')
+                    ->orWhere('p.viewPrivacy = :privacy3')
+                    ->setParameter('privacy1', 'public')
+                    ->setParameter('privacy2', 'member')
+                    ->setParameter('privacy3', 'friend');
+            }
+            if (in_array('ROLE_FAMILY', $userRoles) && !in_array('ROLE_ADMIN', $userRoles)) {
+                $qb->where('p.viewPrivacy = :privacy1')
+                    ->orWhere('p.viewPrivacy = :privacy2')
+                    ->orWhere('p.viewPrivacy = :privacy3')
+                    ->orWhere('p.viewPrivacy = :privacy4')
+                    ->setParameter('privacy1', 'public')
+                    ->setParameter('privacy2', 'member')
+                    ->setParameter('privacy3', 'friend')
+                    ->setParameter('privacy4', 'family');
+            }
+            if (in_array('ROLE_ADMIN', $userRoles)) {
+                $qb->where('p.viewPrivacy = :privacy1')
+                    ->orWhere('p.viewPrivacy = :privacy2')
+                    ->orWhere('p.viewPrivacy = :privacy3')
+                    ->orWhere('p.viewPrivacy = :privacy4')
+                    ->orWhere('p.viewPrivacy = :privacy5')
+                    ->setParameter('privacy1', 'public')
+                    ->setParameter('privacy2', 'member')
+                    ->setParameter('privacy3', 'friend')
+                    ->setParameter('privacy4', 'family')
+                    ->setParameter('privacy5', 'private');
+            }
         }
 
         return $qb->orderBy('p.createdAt', 'DESC')

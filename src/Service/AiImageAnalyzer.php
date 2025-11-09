@@ -142,7 +142,7 @@ class AiImageAnalyzer
     }
 
     /**
-     * Analyze image using OpenAI Vision API
+     * Analyze image using OpenAI Vision API with base64 encoding
      */
     public function analyzeImageWithOpenAI(string $filename): array
     {
@@ -153,17 +153,32 @@ class AiImageAnalyzer
             'tags' => [],
         ];
 
-        $imageUrl = rtrim($this->publicUrl, '/') . '/uploads/photos/' . $filename;
-
         try {
+            // Read the file and encode as base64
+            $filePath = $this->getFilePath($filename);
+
+            if (!file_exists($filePath)) {
+                $this->aiServiceLogger->error('Image file not found', [
+                    'filename' => $filename,
+                    'expected_path' => $filePath,
+                ]);
+                return $defaultResult;
+            }
+
+            $imageData = file_get_contents($filePath);
+            $base64Image = base64_encode($imageData);
+            $mimeType = mime_content_type($filePath);
+
+            // Create data URL with base64
+            $imageUrl = "data:{$mimeType};base64,{$base64Image}";
 
             $this->aiServiceLogger->info('OpenAI API Request Started', [
                 'provider' => 'openai',
                 'model' => $ai_model,
                 'filename' => $filename,
-                'image_url' => $imageUrl,
+                'image_size_bytes' => strlen($imageData),
+                'base64_length' => strlen($base64Image),
                 'timestamp' => date('Y-m-d H:i:s'),
-                'api key' => $this->aiApiKey
             ]);
 
             $response = $this->client->chat()->create([
@@ -175,45 +190,45 @@ class AiImageAnalyzer
                             [
                                 'type' => 'text',
                                 'text' => "You are a professional photo curator. Analyze images and provide: 1) A short, descriptive title (max 60 chars), 2) A detailed description (2-3 sentences), 3) Relevant tags (comma-separated, max 10 tags). Format your response as JSON with keys: title, description, tags (array)."
-                            ],
-                            [
-                                'type' => 'image_url',
-                                // Gebruik base64 of een publiek toegankelijke URL
-                                'image_url' => [
-                                    'url' => $imageUrl
-                                ]
                             ]
+//                            [
+//                                'type' => 'image_url',
+//                                'image_url' => [
+//                                    'url' => $imageUrl,
+//                                    'detail' => 'low' // Use 'low' for faster/cheaper processing, 'high' for better quality
+//                                ]
+//                            ]
                         ],
                     ],
                 ],
             ]);
 
-            // Antwoord ophalen
+            // Process response
             $output = $response['choices'][0]['message']['content'] ?? '';
 
-            $this->aiServiceLogger->error('OpenAI Response', [
+            $this->aiServiceLogger->info('OpenAI Response Received', [
                 'provider' => 'openai',
-                'response' => $response
+                'response_length' => strlen($output),
             ]);
 
-            // Probeer JSON eruit te halen als het model dat netjes retourneert
+            // Clean JSON markers
             $output = str_replace('```json', '', $output);
             $output = str_replace('```', '', $output);
             $data = json_decode($output, true);
+
             if (json_last_error() !== JSON_ERROR_NONE) {
                 $this->aiServiceLogger->error('OpenAI JSON Decode Failed', [
                     'provider' => 'openai',
                     'filename' => $filename,
                     'json_error_code' => json_last_error(),
                     'json_error_message' => json_last_error_msg(),
-                    'raw_output' => $output,
-                    'output_preview' => substr($output, 0, 500), // First 500 chars
+                    'output_preview' => substr($output, 0, 500),
                 ]);
 
                 $data = ['raw_output' => $output];
             }
 
-            $this->aiServiceLogger->error('OpenAI API Request Succes', [
+            $this->aiServiceLogger->info('OpenAI API Request Success', [
                 'provider' => 'openai',
                 'filename' => $filename,
                 'data' => $data,
@@ -227,197 +242,56 @@ class AiImageAnalyzer
             return $finalResult;
 
         } catch (RateLimitException $e) {
-            // Te veel requests (HTTP 429)
             $this->aiServiceLogger->error('OpenAI API Request Failed: Rate limit reached', [
                 'provider' => 'openai',
                 'filename' => $filename,
                 'error_type' => get_class($e),
                 'error_message' => $e->getMessage(),
                 'error_code' => $e->getCode(),
-                'trace' => $e->getTraceAsString(),
             ]);
 
-            return [
-                'error' => 'Rate limit bereikt. Probeer later opnieuw.',
-                'details' => $e->getMessage(),
-            ];
+            return $defaultResult;
         } catch (ErrorException $e) {
-            // Algemene API-fout (bijv. 500 of 400)
-
-            $this->aiServiceLogger->error('OpenAI API Request Failed:  General Error', [
+            $this->aiServiceLogger->error('OpenAI API Request Failed: General Error', [
                 'provider' => 'openai',
                 'filename' => $filename,
                 'error_type' => get_class($e),
                 'error_message' => $e->getMessage(),
                 'error_code' => $e->getCode(),
-                'trace' => $e->getTraceAsString(),
             ]);
 
-            return [
-                'error' => 'OpenAI API-fout',
-                'details' => $e->getMessage(),
-            ];
+            return $defaultResult;
         } catch (\Throwable $e) {
-            // Alles wat anders fout gaat (bestanden, netwerk, etc.)
-
-              $this->aiServiceLogger->error('OpenAI API Request Failed: Unexpected error', [
+            $this->aiServiceLogger->error('OpenAI API Request Failed: Unexpected error', [
                 'provider' => 'openai',
                 'filename' => $filename,
                 'error_type' => get_class($e),
                 'error_message' => $e->getMessage(),
                 'error_code' => $e->getCode(),
-                'trace' => $e->getTraceAsString(),
             ]);
 
-            return [
-                'error' => 'Onverwachte fout',
-                'details' => $e->getMessage(),
-            ];
+            return $defaultResult;
         }
-
-//        $defaultResult = [
-//            'name' => null,
-//            'description' => null,
-//            'tags' => [],
-//        ];
-//
-//        $imageUrl = rtrim($this->publicUrl, '/') . '/uploads/photos/' . $filename;
-//        $startTime = microtime(true);
-//        $ai_model = 'gpt-4o-mini';
-//
-//        $this->aiServiceLogger->info('OpenAI API Request Started', [
-//            'provider' => 'openai',
-//            'model' => $ai_model,
-//            'filename' => $filename,
-//            'image_url' => $imageUrl,
-//            'timestamp' => date('Y-m-d H:i:s'),
-//            'api key' => $this->aiApiKey
-//        ]);
-//
-//        $maxRetries = 3;
-//        $retryDelay = 1; // seconds
-//
-//        for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
-//            try {
-//                $requestPayload = [
-//                    'model' => $ai_model,
-//                    'messages' => [
-//                        [
-//                            'role' => 'system',
-//                            'content' => 'You are a professional photo curator. Analyze images and provide: 1) A short, descriptive title (max 60 chars), 2) A detailed description (2-3 sentences), 3) Relevant tags (comma-separated, max 10 tags). Format your response as JSON with keys: title, description, tags (array).',
-//                        ],
-//                        [
-//                            'role' => 'user',
-//                            'content' => [
-//                                [
-//                                    'type' => 'text',
-//                                    'text' => 'Please analyze this photo and provide a title, description, and relevant tags.',
-//                                ],
-//                                [
-//                                    'type' => 'image_url',
-//                                    'image_url' => [
-//                                        'url' => $imageUrl,
-//                                    ],
-//                                ],
-//                            ],
-//                        ],
-//                    ],
-//                    'max_tokens' => 500,
-//                    'response_format' => ['type' => 'json_object'],
-//                ];
-//
-//                $response = $this->httpClient->request('POST', 'https://api.openai.com/v1/chat/completions', [
-//                    'headers' => [
-//                        'Authorization' => 'Bearer ' . $this->aiApiKey,
-//                        'Content-Type' => 'application/json',
-//                    ],
-//                    'json' => $requestPayload,
-//                    'timeout' => 30,
-//                ]);
-//
-//                $statusCode = $response->getStatusCode();
-//                $responseData = $response->toArray();
-//                $duration = round(microtime(true) - $startTime, 3);
-//
-//                $content = $responseData['choices'][0]['message']['content'] ?? '{}';
-//                $result = json_decode($content, true);
-//
-//                $finalResult = [
-//                    'name' => $result['title'] ?? null,
-//                    'description' => $result['description'] ?? null,
-//                    'tags' => is_array($result['tags'] ?? null) ? $result['tags'] : [],
-//                ];
-//
-//                $this->aiServiceLogger->info('OpenAI API Request Successful', [
-//                    'provider' => 'openai',
-//                    'model' => $ai_model,
-//                    'filename' => $filename,
-//                    'status_code' => $statusCode,
-//                    'duration_seconds' => $duration,
-//                    'result' => $finalResult,
-//                    'usage' => $responseData['usage'] ?? null,
-//                    'response_size_bytes' => strlen(json_encode($responseData)),
-//                    'attempt' => $attempt,
-//                ]);
-//
-//                return $finalResult;
-//
-//            } catch (TransportExceptionInterface $e) {
-//                $duration = round(microtime(true) - $startTime, 3);
-//                $errorMessage = $e->getMessage();
-//
-//                // Check if it's a rate limit error (429)
-//                if (str_contains($errorMessage, '429') && $attempt < $maxRetries) {
-//                    $waitTime = $retryDelay * pow(2, $attempt - 1); // Exponential backoff
-//
-//                    $this->aiServiceLogger->warning('OpenAI API Rate Limit - Retrying', [
-//                        'provider' => 'openai',
-//                        'filename' => $filename,
-//                        'attempt' => $attempt,
-//                        'max_retries' => $maxRetries,
-//                        'wait_seconds' => $waitTime,
-//                        'error_message' => $errorMessage,
-//                    ]);
-//
-//                    sleep($waitTime);
-//                    continue; // Retry
-//                }
-//
-//                $this->aiServiceLogger->error('OpenAI API Transport Error', [
-//                    'provider' => 'openai',
-//                    'filename' => $filename,
-//                    'error_type' => 'TransportException',
-//                    'error_message' => $errorMessage,
-//                    'error_code' => $e->getCode(),
-//                    'duration_seconds' => $duration,
-//                    'attempt' => $attempt,
-//                    'trace' => $e->getTraceAsString(),
-//                ]);
-//
-//                return $defaultResult;
-//            } catch (\Exception $e) {
-//                $duration = round(microtime(true) - $startTime, 3);
-//
-//                $this->aiServiceLogger->error('OpenAI API Request Failed', [
-//                    'provider' => 'openai',
-//                    'filename' => $filename,
-//                    'error_type' => get_class($e),
-//                    'error_message' => $e->getMessage(),
-//                    'error_code' => $e->getCode(),
-//                    'duration_seconds' => $duration,
-//                    'attempt' => $attempt,
-//                    'trace' => $e->getTraceAsString(),
-//                ]);
-//
-//                return $defaultResult;
-//            }
-//        }
-
-        return $defaultResult;
     }
 
     /**
-     * Analyze image using Google Cloud Vision API
+     * Helper method to get the full file path
+     */
+    private function getFilePath(string $filename): string
+    {
+        // Try var/uploads/photos first (new secure location)
+        $securePath = dirname(__DIR__, 2) . '/var/uploads/photos/' . $filename;
+        if (file_exists($securePath)) {
+            return $securePath;
+        }
+
+        // Fallback to public folder for backwards compatibility
+        $publicPath = dirname(__DIR__, 2) . '/public/uploads/photos/' . $filename;
+        return $publicPath;
+    }
+
+    /**
+     * Analyze image using Google Cloud Vision API with base64
      */
     public function analyzeImageWithGoogleVision(string $filename): array
     {
@@ -427,24 +301,34 @@ class AiImageAnalyzer
             'tags' => [],
         ];
 
-        $imageUrl = rtrim($this->publicUrl, '/') . '/uploads/photos/' . $filename;
         $startTime = microtime(true);
 
         $this->aiServiceLogger->info('Google Vision API Request Started', [
             'provider' => 'google',
             'filename' => $filename,
-            'image_url' => $imageUrl,
             'timestamp' => date('Y-m-d H:i:s'),
         ]);
 
         try {
+            // Read the file and encode as base64
+            $filePath = $this->getFilePath($filename);
+
+            if (!file_exists($filePath)) {
+                $this->aiServiceLogger->error('Image file not found', [
+                    'filename' => $filename,
+                    'expected_path' => $filePath,
+                ]);
+                return $defaultResult;
+            }
+
+            $imageData = file_get_contents($filePath);
+            $base64Image = base64_encode($imageData);
+
             $requestPayload = [
                 'requests' => [
                     [
                         'image' => [
-                            'source' => [
-                                'imageUri' => $imageUrl,
-                            ],
+                            'content' => $base64Image, // Use base64 content instead of URL
                         ],
                         'features' => [
                             ['type' => 'LABEL_DETECTION', 'maxResults' => 10],
@@ -507,7 +391,6 @@ class AiImageAnalyzer
                 'duration_seconds' => $duration,
                 'result' => $result,
                 'labels_count' => count($annotations['labelAnnotations'] ?? []),
-                'response_size_bytes' => strlen(json_encode($responseData)),
             ]);
 
             return $result;
@@ -522,7 +405,6 @@ class AiImageAnalyzer
                 'error_message' => $e->getMessage(),
                 'error_code' => $e->getCode(),
                 'duration_seconds' => $duration,
-                'trace' => $e->getTraceAsString(),
             ]);
 
             return $defaultResult;
@@ -536,10 +418,10 @@ class AiImageAnalyzer
                 'error_message' => $e->getMessage(),
                 'error_code' => $e->getCode(),
                 'duration_seconds' => $duration,
-                'trace' => $e->getTraceAsString(),
             ]);
 
             return $defaultResult;
         }
     }
+
 }

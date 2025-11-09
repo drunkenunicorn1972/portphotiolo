@@ -25,7 +25,7 @@
                     <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Home</a></li>
                     {% if photo.albums|length > 0 %}
                         <li class="breadcrumb-item">
-                            <a href="{{ path('app_album_view', {id: photo.albums.first.id}) }}">
+                            <a href="{{ path('app_album_view', {uuid: photo.albums.first.uuid}) }}">
                                 {{ photo.albums.first.name }}
                             </a>
                         </li>
@@ -38,12 +38,12 @@
             <div class="text-center mb-4">
                 <picture>
                     <source media="(max-width: 768px)"
-                            srcset="{{ asset('uploads/photos/' ~ (photo.filenameTablet ?? photo.filename)) }}">
+                            srcset="{{ path('app_photo_serve', {uuid: photo.uuid, size: 'tablet'}) }}">
                     <source media="(max-width: 1920px)"
-                            srcset="{{ asset('uploads/photos/' ~ (photo.filenameDesktop ?? photo.filename)) }}">
-                    <img src="{{ asset('uploads/photos/' ~ photo.filename) }}"
+                            srcset="{{ path('app_photo_serve', {uuid: photo.uuid, size: 'desktop'}) }}">
+                    <img src="{{ path('app_photo_serve', {uuid: photo.uuid, size: 'original'}) }}"
                          alt="{{ photo.name }}"
-                         class="myphoto img-fluid">
+                         class="img-fluid">
                 </picture>
             </div>
 
@@ -72,7 +72,7 @@
                             <div class="mb-3">
                                 <strong><i class="fas fa-images"></i> Albums:</strong><br>
                                 {% for album in photo.albums %}
-                                    <a href="{{ path('app_album_view', {id: album.id}) }}"
+                                    <a href="{{ path('app_album_view', {uuid: album.uuid}) }}"
                                        class="up-badge bg-primary up-badge-tag text-decoration-none">
                                         {{ album.name }}
                                     </a>

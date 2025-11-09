@@ -26,20 +26,33 @@ class BulkPhotoUploadController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $album = $form->get('album')->getData();
             $uploadedFiles = $form->get('photos')->getData();
+            $viewPrivacy = $form->get('viewPrivacy')->getData();
+            $requiredRole = $form->get('requiredRole')->getData();
 
-            // Process bulk upload
+            // Process bulk upload with privacy settings
             $results = $bulkPhotoUploader->uploadPhotosToAlbum(
                 $uploadedFiles,
                 $album,
-                $this->getUser()
+                $this->getUser(),
+                $viewPrivacy,
+                $requiredRole
             );
 
             // Show results
             if ($results['success'] > 0) {
+                $privacyLabel = match($viewPrivacy) {
+                    'public' => 'Public',
+                    'friend' => 'Friends',
+                    'family' => 'Family',
+                    'private' => 'Private',
+                    default => 'Private',
+                };
+
                 $this->addFlash('success', sprintf(
-                    'Successfully uploaded %d photo(s) to "%s"',
+                    'Successfully uploaded %d photo(s) to "%s" with %s privacy',
                     $results['success'],
-                    $album->getName()
+                    $album->getName(),
+                    $privacyLabel
                 ));
             }
 

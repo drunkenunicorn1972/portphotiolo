@@ -50,6 +50,9 @@ class Album
     #[ORM\Column]
     private int $viewCount = 0;
 
+    #[ORM\Column(length: 20)]
+    private string $viewPrivacy = 'public';
+
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $createdAt = null;
 
@@ -66,9 +69,6 @@ class Album
     #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'albums')]
     #[ORM\JoinTable(name: 'album_tags')]
     private Collection $tags;
-
-    #[ORM\Column(type: Types::STRING, length: 50, nullable: true)]
-    private ?string $requiredRole = null;
 
     public function __construct()
     {
@@ -287,14 +287,18 @@ class Album
         return $this->name ?? '';
     }
 
-    public function getRequiredRole(): ?string
+    public function getViewPrivacy(): string
     {
-        return $this->requiredRole;
+        return $this->viewPrivacy;
     }
 
-    public function setRequiredRole(?string $requiredRole): static
+    public function setViewPrivacy(string $viewPrivacy): static
     {
-        $this->requiredRole = $requiredRole;
+        if (!in_array($viewPrivacy, ['public', 'member', 'friend', 'family', 'private'])) {
+            throw new \InvalidArgumentException('Invalid privacy level');
+        }
+        $this->viewPrivacy = $viewPrivacy;
         return $this;
     }
+
 }

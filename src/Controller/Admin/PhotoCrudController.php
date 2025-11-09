@@ -34,7 +34,8 @@ class PhotoCrudController extends AbstractCrudController
         private ExifExtractor $exifExtractor,
         private AiImageAnalyzer $aiImageAnalyzer,
         private TagRepository $tagRepository,
-        private ImageResizer $imageResizer
+        private ImageResizer $imageResizer,
+        private string $uploadDirectory
     ) {
     }
 
@@ -95,10 +96,6 @@ class PhotoCrudController extends AbstractCrudController
                 return $value ? $value->toRfc4122() : '';
             });
 
-        // Show user on detail/index, but hide on forms (will be set automatically)
-        yield AssociationField::new('user')
-            ->hideOnForm();
-
         $nameField = TextField::new('name')
             ->setRequired(true);
         if ($isNew) {
@@ -108,16 +105,25 @@ class PhotoCrudController extends AbstractCrudController
 
         // Use thumbnail for index, full image for edit/detail
         if ($isIndex) {
-            yield ImageField::new('filenameThumbnail')
-                ->setBasePath('uploads/photos')
-                ->setLabel('Photo');
-        } else {
             yield ImageField::new('filename')
-                ->setBasePath('uploads/photos')
-                ->setUploadDir('public/uploads/photos')
-                ->setUploadedFileNamePattern('[randomhash].[extension]')
-                ->setRequired($isNew)
-                ->setLabel('Photo File');
+                ->setLabel('Photo')
+                ->onlyOnIndex()
+                ->formatValue(function ($value, $entity) {
+                    $uuid = $entity->getUuid()->toRfc4122();
+                    return sprintf(
+                        '/photo/serve/%s/thumbnail',
+                        $uuid
+                    );
+                });
+        } else {
+            if ($isNew) {
+                yield ImageField::new('filename')
+                    ->setBasePath('uploads/photos')
+                    ->setUploadDir($this->uploadDirectory)
+                    ->setUploadedFileNamePattern('[randomhash].[extension]')
+                    ->setRequired($isNew)
+                    ->setLabel('Photo File');
+            }
         }
 
         $descriptionField = TextareaField::new('description')
@@ -130,6 +136,7 @@ class PhotoCrudController extends AbstractCrudController
         yield ChoiceField::new('viewPrivacy')
             ->setChoices([
                 'Public' => 'public',
+                'Member' => 'member',
                 'Friends' => 'friend',
                 'Family' => 'family',
                 'Private' => 'private',
@@ -169,6 +176,10 @@ class PhotoCrudController extends AbstractCrudController
         yield $tagsField;
 
         yield IntegerField::new('viewCount')
+            ->hideOnForm();
+
+        // Show user on detail/index, but hide on forms (will be set automatically)
+        yield AssociationField::new('user')
             ->hideOnForm();
 
         yield DateTimeField::new('createdAt')
@@ -240,16 +251,6 @@ class PhotoCrudController extends AbstractCrudController
             ->setFormTypeOption('disabled', true)
             ->setHelp('Auto-extracted from EXIF data')
             ->hideOnIndex();
-        
-        yield ChoiceField::new('requiredRole', 'Required Role')
-            ->setChoices([
-                'Public (No Role)' => null,
-                'User' => 'ROLE_USER',
-                'Family' => 'ROLE_FAMILY',
-                'Friend' => 'ROLE_FRIEND',
-                'Admin' => 'ROLE_ADMIN',
-            ])
-            ->setHelp('Select which role is required to view this photo');
 
     }
 
@@ -265,7 +266,7 @@ class PhotoCrudController extends AbstractCrudController
 
         // Process uploaded file
         if ($entityInstance->getFilename()) {
-            $uploadDir = $this->getParameter('kernel.project_dir') . '/public/uploads/photos/';
+            $uploadDir = $this->uploadDirectory;
             $filePath = $uploadDir . $entityInstance->getFilename();
 
             if (file_exists($filePath)) {
@@ -323,7 +324,7 @@ class PhotoCrudController extends AbstractCrudController
         }
 
         // Check if a new file was uploaded during edit
-        $uploadDir = $this->getParameter('kernel.project_dir') . '/public/uploads/photos/';
+        $uploadDir = $this->uploadDirectory;
         $filePath = $uploadDir . $entityInstance->getFilename();
 
         if (file_exists($filePath)) {
@@ -380,7 +381,7 @@ class PhotoCrudController extends AbstractCrudController
     {
         if ($entityInstance instanceof Photo) {
             // Delete all image files when deleting photo
-            $uploadDir = $this->getParameter('kernel.project_dir') . '/public/uploads/photos/';
+            $uploadDir = $this->uploadDirectory;
             $filenames = [
                 $entityInstance->getFilename(),
                 $entityInstance->getFilenameThumbnail(),
@@ -462,7 +463,7 @@ class PhotoCrudController extends AbstractCrudController
                 ->generateUrl());
         }
 
-        $uploadDir = $this->getParameter('kernel.project_dir') . '/public/uploads/photos/';
+        $uploadDir = $this->uploadDirectory;
         $filePath = $uploadDir . $photo->getFilename();
 
         if (!file_exists($filePath)) {

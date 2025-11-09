@@ -64,12 +64,8 @@ class AlbumRepository extends ServiceEntityRepository
 
         if (!$user) {
             // Not logged in, only show public albums
-            $qb->where('a.requiredRole IS NULL');
-        } else {
-            $roles = $user->getRoles();
-            $qb->where('a.requiredRole IS NULL')
-                ->orWhere('a.requiredRole IN (:roles)')
-                ->setParameter('roles', $roles);
+            $qb->where('a.viewPrivacy = :privacy')
+                ->setParameter('privacy', 'public');
         }
 
         return $qb->orderBy('a.createdAt', 'DESC')

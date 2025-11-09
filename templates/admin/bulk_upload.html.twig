@@ -13,6 +13,13 @@
             {{ form_errors(form.album) }}
         </div>
 
+        <div class="mb-3">
+            {{ form_label(form.viewPrivacy) }}
+            {{ form_widget(form.viewPrivacy) }}
+            {{ form_help(form.viewPrivacy) }}
+            {{ form_errors(form.viewPrivacy) }}
+        </div>
+
         <div class="mb-3" data-controller="dropzone">
             {{ form_label(form.photos) }}
 
@@ -39,6 +46,11 @@
             </div>
 
             {{ form_errors(form.photos) }}
+        </div>
+
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <strong>Privacy Settings:</strong> All uploaded photos will have the same privacy setting you selected above.
         </div>
 
         <div class="d-flex gap-2">
