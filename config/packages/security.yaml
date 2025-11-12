@@ -32,6 +32,7 @@ security:
             # switch_user: true
     role_hierarchy:
         ROLE_ADMIN: [ROLE_USER]
+        ROLE_MEMBER: [ROLE_USER]
         ROLE_FAMILY: [ROLE_USER]
         ROLE_FRIEND: [ROLE_USER]
 
@@ -40,7 +41,8 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
-        - { path: ^/members, roles: ROLE_USER }
+        - { path: ^/members, roles: ROLE_MEMBER }
+        - { path: ^/album/.+/t/.+$, roles: PUBLIC_ACCESS }
 
 when@test:
     security:

@@ -3,11 +3,14 @@
 namespace App\Controller;
 
 use App\Repository\AlbumRepository;
+use App\Repository\AlbumTicketRepository;
 use App\Repository\PhotoRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class HomeController extends AbstractController
 {
@@ -38,44 +41,162 @@ class HomeController extends AbstractController
         ]);
     }
 
+    // THIS ROUTE MUST COME BEFORE THE GENERAL /album/{uuid} ROUTE
+    #[Route('/album/{uuid}/t/{ticket}', name: 'app_album_view_with_ticket', priority: 10)]
+    public function viewAlbumWithTicket(
+        string $uuid,
+        string $ticket,
+        AlbumRepository $albumRepository,
+        AlbumTicketRepository $ticketRepository,
+        Request $request
+    ): Response {
+//        $user = $this->getUser();
+//        if ($user) {
+//            $userRoles = $user ? $user->getRoles() : ['ROLE_USER'];
+//            $this->userRole = $userRoles[0];
+//            if ($user->isAdmin()) {
+//                $this->userRole = 'ROLE_ADMIN';
+//            }
+//        }
 
-
-    #[Route('/album/{uuid}', name: 'app_album_view')]
-    public function viewAlbum(string $uuid, AlbumRepository $albumRepository): Response
-    {
-        $user = $this->getUser();
-        if ($user) {
-            $userRoles = $user ? $user->getRoles() : ['ROLE_USER'];
-            $this->userRole = $userRoles[0]; // Gets the first role
-            if ($user->isAdmin()) {
-                $this->userRole = 'ROLE_ADMIN';
-            }
-        }
-
-//        $album = $albumRepository->findOneBy(['uuid' => $uuid, 'viewPrivacy' => 'public']);
         $album = $albumRepository->findOneBy(['uuid' => $uuid]);
 
         if (!$album) {
             throw $this->createNotFoundException('Album not found');
         }
 
+        // Check for ticket cookie
+        $cookieName = 'album_access_' . $album->getUuid();
+        $ticketUuid = $request->cookies->get($cookieName);
+
+        $hasValidTicket = false;
+//        if ($ticketUuid) {
+//            $ticket = $ticketRepository->findValidTicketByUuid($ticketUuid);
+//            if ($ticket && $ticket->getAlbum()->getId() === $album->getId()) {
+//                $hasValidTicket = true;
+//                // Update last accessed
+//                $ticket->setLastAccessedAt(new \DateTimeImmutable());
+//                $ticketRepository->save($ticket, true);
+//            }
+//        } else {
+            $album_ticket = $ticketRepository->findValidTicketByUuid($ticket);
+//            dd($album_ticket, $ticket);
+
+            if ($album_ticket && $album_ticket->getAlbum()->getId() === $album->getId()) {
+                $hasValidTicket = true;
+                // Update last accessed
+                $album_ticket->setLastAccessedAt(new \DateTimeImmutable());
+                $ticketRepository->save($album_ticket, true);
+            }
+//        }
+
+        // Check privacy settings
+        $viewPrivacy = $album->getViewPrivacy();
+//        dd($hasValidTicket, $viewPrivacy);
+//        $hasValidTicket= true;
+
+        // If has valid ticket, bypass privacy checks
+        if (!$hasValidTicket) {
+            // Check if user has required role
+            if ($viewPrivacy !== 'public' && !$this->getUser()) {
+                throw $this->createAccessDeniedException('You must be logged in to view this album.');
+            } else {
+                if ($this->userRole == 'ROLE_ADMIN' && !in_array($viewPrivacy, ['public', 'member', 'friend', 'family'])) {
+                    throw $this->createAccessDeniedException('You do not have access to this album.');
+                } elseif ($this->userRole == 'ROLE_USER' && !in_array($viewPrivacy, ['public', 'member'])) {
+                    throw $this->createAccessDeniedException('You do not have access to this album.');
+                } elseif ($this->userRole == 'ROLE_FRIEND' && !in_array($viewPrivacy, ['public', 'member', 'friend'])) {
+                    throw $this->createAccessDeniedException('You do not have access to this album.');
+                } elseif ($this->userRole == 'ROLE_FAMILY' && !in_array($viewPrivacy, ['public', 'member', 'friend', 'family'])) {
+                    throw $this->createAccessDeniedException('You do not have access to this album.');
+                } elseif ($viewPrivacy == 'public') {
+                    // do nothing anyone can view this album
+                }
+            }
+        }
+
+        // Increment view count
+        $album->incrementViewCount();
+        $albumRepository->save($album, true);
+
+        // Create response with cookie
+        $response = $this->render('home/album.html.twig', [
+            'album' => $album,
+            'hasTicketAccess' => true, // Pass this to the template so it knows this is ticket access
+        ]);
+
+        // Set cookie for this album access
+        $cookieName = 'album_access_' . $album->getUuid();
+        $cookie = Cookie::create($cookieName)
+            ->withValue($ticket)
+            ->withExpires(new \DateTime('+30 days'))
+            ->withPath('/')
+            ->withSecure(true)
+            ->withHttpOnly(true)
+            ->withSameSite(Cookie::SAMESITE_LAX);
+
+        $response->headers->setCookie($cookie);
+
+        return $response;
+    }
+
+    #[Route('/album/{uuid}', name: 'app_album_view')]
+    public function viewAlbum(
+        string $uuid,
+        AlbumRepository $albumRepository,
+        AlbumTicketRepository $ticketRepository,
+        Request $request
+    ): Response {
+        $user = $this->getUser();
+        if ($user) {
+            $userRoles = $user ? $user->getRoles() : ['ROLE_USER'];
+            $this->userRole = $userRoles[0];
+            if ($user->isAdmin()) {
+                $this->userRole = 'ROLE_ADMIN';
+            }
+        }
+
+        $album = $albumRepository->findOneBy(['uuid' => $uuid]);
+
+        if (!$album) {
+            throw $this->createNotFoundException('Album not found');
+        }
+
+        // Check for ticket cookie
+        $cookieName = 'album_access_' . $album->getUuid();
+        $ticketUuid = $request->cookies->get($cookieName);
+
+        $hasValidTicket = false;
+        if ($ticketUuid) {
+            $ticket = $ticketRepository->findValidTicketByUuid($ticketUuid);
+            if ($ticket && $ticket->getAlbum()->getId() === $album->getId()) {
+                $hasValidTicket = true;
+                // Update last accessed
+                $ticket->setLastAccessedAt(new \DateTimeImmutable());
+                $ticketRepository->save($ticket, true);
+            }
+        }
+
         // Check privacy settings
         $viewPrivacy = $album->getViewPrivacy();
 
-        // Check if user has required role
-        if ($viewPrivacy !== 'public' && !$this->getUser()) {
-            throw $this->createAccessDeniedException('You must be logged in to view this album.');
-        } else {
-            if ($this->userRole == 'ROLE_ADMIN' && !in_array($viewPrivacy, ['public', 'member', 'friend', 'family'])) {
-                throw $this->createAccessDeniedException('You do not have access to this album.');
-            } elseif ($this->userRole == 'ROLE_USER' && !in_array($viewPrivacy, ['public', 'member'])) {
-                throw $this->createAccessDeniedException('You do not have access to this album.');
-            } elseif ($this->userRole == 'ROLE_FRIEND' && !in_array($viewPrivacy, ['public', 'member', 'friend'])) {
-                throw $this->createAccessDeniedException('You do not have access to this album.');
-            } elseif ($this->userRole == 'ROLE_FAMILY' && !in_array($viewPrivacy, ['public', 'member', 'friend', 'family'])) {
-                throw $this->createAccessDeniedException('You do not have access to this album.');
-            } elseif ($viewPrivacy == 'public') {
-                // do nothing anyone can view this album
+        // If has valid ticket, bypass privacy checks
+        if (!$hasValidTicket) {
+            // Check if user has required role
+            if ($viewPrivacy !== 'public' && !$this->getUser()) {
+                throw $this->createAccessDeniedException('You must be logged in to view this album.');
+            } else {
+                if ($this->userRole == 'ROLE_ADMIN' && !in_array($viewPrivacy, ['public', 'member', 'friend', 'family'])) {
+                    throw $this->createAccessDeniedException('You do not have access to this album.');
+                } elseif ($this->userRole == 'ROLE_USER' && !in_array($viewPrivacy, ['public', 'member'])) {
+                    throw $this->createAccessDeniedException('You do not have access to this album.');
+                } elseif ($this->userRole == 'ROLE_FRIEND' && !in_array($viewPrivacy, ['public', 'member', 'friend'])) {
+                    throw $this->createAccessDeniedException('You do not have access to this album.');
+                } elseif ($this->userRole == 'ROLE_FAMILY' && !in_array($viewPrivacy, ['public', 'member', 'friend', 'family'])) {
+                    throw $this->createAccessDeniedException('You do not have access to this album.');
+                } elseif ($viewPrivacy == 'public') {
+                    // do nothing anyone can view this album
+                }
             }
         }
 
@@ -85,6 +206,7 @@ class HomeController extends AbstractController
 
         return $this->render('home/album.html.twig', [
             'album' => $album,
+            'hasTicketAccess' => $hasValidTicket,
         ]);
     }
 

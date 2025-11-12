@@ -2,6 +2,7 @@ monolog:
     channels:
         - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
         - ai_service # All logs from the AI service are logged in the "ai_service" channel
+        - email # All logs from the email service are logged in the "email" channel
 
 when@dev:
     monolog:
@@ -26,6 +27,12 @@ when@dev:
                 level: debug
                 channels: ["ai_service"]
                 formatter: monolog.formatter.ai_service
+
+            email:
+                type: stream
+                path: "%kernel.logs_dir%/email.log"
+                level: info
+                channels: ["email"]
 
             console:
                 type: console
